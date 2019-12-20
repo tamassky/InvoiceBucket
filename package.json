@@ -1,0 +1,23 @@
+{
+  "name": "invoicebucket",
+  "version": "1.0.0",
+  "description": "szakdolgozat projekt",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tamassky/InvoiceBucket.git"
+  },
+  "author": "Kovacs Tamas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tamassky/InvoiceBucket/issues"
+  },
+  "homepage": "https://github.com/tamassky/InvoiceBucket#readme",
+  "dependencies": {
+    "ejs": "^3.0.1",
+    "express": "^4.17.1"
+  }
+}
