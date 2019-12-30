@@ -4,6 +4,7 @@ var express 		= require("express"),
 var indexRoutes		= require("./routes/index");
 
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
 
 app.use("/", indexRoutes);
 
