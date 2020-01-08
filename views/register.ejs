@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Invoice Bucket</title>
+		<link rel="stylesheet" href="stylesheets/bootstrap.min.css"/>
+	</head>
+	<body>
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/">InvoiceBucket</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a href="/login">Bejelentkezés</a>
+						</li>
+						<li>
+							<a href="/register">Regisztráció</a>
+						</li>	
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div style="width: 30%; margin: 25px auto;">
+					<form action="/register" method="POST">
+						<div class="form-group">
+							<label>E-mail-cím</label>
+							<input class="form-control" type="email" name="emailAddress">
+							<small class="form-text text-muted">Érvényes e-mail-címet adjon meg!</small>
+						</div>
+						<div class="form-group">
+							<label>Jelszó</label>
+							<input class="form-control" type="password" name="password">
+							<small class="form-text text-muted">Legalább 8 karakter hosszú legyen, valamint tartalmazzon kisbetűt, nagybetűt és számot egyaránt!</small>
+						</div>
+					</form>
+					<a href="/">Vissza</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
