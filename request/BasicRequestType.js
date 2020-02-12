@@ -49,7 +49,7 @@ function buildBasicRequestType(requestId, user, indexhash){
 	reqbody = reqbody + '<softwareName>Invoice Bucket</softwareName>';
 	reqbody = reqbody + '<softwareOperation>ONLINE_SERVICE</softwareOperation>';
 	reqbody = reqbody + '<softwareMainVersion>0.1</softwareMainVersion>';
-	reqbody = reqbody + '<softwareDevName>Kovács Tamás</softwareDevName>';
+	reqbody = reqbody + '<softwareDevName>Kovacs Tamas</softwareDevName>';
 	reqbody = reqbody + '<softwareDevContact>openbvehu@gmail.com</softwareDevContact>';
 	reqbody = reqbody + '<softwareDevCountryCode>HU</softwareDevCountryCode>';
 	reqbody = reqbody + '</software>';
