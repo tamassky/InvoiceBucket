@@ -13,25 +13,27 @@ var queryTaxpayer			= require("./queryTaxpayer");
 var tokenExchange			= require("./tokenExchange");
 
 var user = {
-		login: 'aar1zbooepaxmwu',/*parameter*/
-		password: 'Kota1706',
-		xmlsign: '52-8227-88b7adf566682KAPEQ0GTENJ',
-		xmlexchange: '78112KAPEQ0H1XDY',
-		taxNumber: '10683424'
-	};
+	login: 'aar1zbooepaxmwu',/*parameter*/
+	password: 'Kota1706',
+	xmlsign: '52-8227-88b7adf566682KAPEQ0GTENJ',
+	xmlexchange: '78112KAPEQ0H1XDY',
+	taxNumber: '10683424'
+};
 
-sendRequest('tokenExchange', user);
+var replyToClient = setRequest('queryTaxpayer', user, requestData);
+new Promise((resolve, reject) => { 
+	if (replyToClient)
+		resolve(replyToClient);
+})
+.then(replyToClient => console.log(replyToClient));
 
-function sendRequest(requestType, user){
+async function setRequest(requestType, user, requestData){
 	
 	
 	var date_now	= new Date();
 	var requestId 	= 'IB' + user.login.substring(1, 10) + date_now.mask();
-	//var requestData = {taxNumber: '12964493'};/*parameter*/
-	//var requestData = {}
 
 	var reqbody;
-	var resp;
 	var processedResponse;
 
 	switch(requestType){
@@ -52,30 +54,42 @@ function sendRequest(requestType, user){
 			break;
 		case 'tokenExchange':
 			reqbody = tokenExchange.buildTokenExchange(requestId, user);
-			
 			break;
 	}
 
 	console.log(reqbody);
-
-	request.post({
-		headers: { 	'content-type'	: 'application/xml',
-					'accept'		: 'application/xml'},
-		url: process.env.APIURL + requestType,
-		body: reqbody
-	}, function(error, response, body){
-		console.log(error);
-		resp = convert.xml2js(body, {compact:true});
-		console.log(resp);/**/
-		processedResponse = processResponse(requestType, resp, user);
-		/*console.log(processedResponse);*/
-	});
 	
-	console.log(processedResponse);
+	const res = await sendRequest(requestType, user, reqbody).catch(err => console.log(err));
+	if (res == 'error')
+		processedResponse = 'request_error';
+	else
+		processedResponse = processResponse(requestType, res, user);
+	return processedResponse;
 }
 
-function processResponse(requestType, rawResponse, user){
-	
+function sendRequest(requestType, user, reqbody){
+	return new Promise((resolve, reject) => {
+		var resp;
+		request.post({
+			headers: { 	'content-type'	: 'application/xml',
+						'accept'		: 'application/xml'},
+			url: process.env.APIURL + requestType,
+			body: reqbody
+		}, function(error, response, body){
+			if (error) 
+				reject(error);
+        	resp = convert.xml2js(body, { compact: true });
+			console.log(response.statusCode);/**/
+			console.log(resp); /**/
+			if(response.statusCode != 200)
+				resolve('error');
+			else
+				resolve(resp);
+		});
+	});
+}
+
+function processResponse(requestType, rawResponse, user){	
 	switch(requestType){
 		case 'manageAnnulment':
 			break;
@@ -90,6 +104,11 @@ function processResponse(requestType, rawResponse, user){
 		case 'queryTransactionStatus':
 			break;
 		case 'queryTaxpayer':
+			var taxpayer = {
+				validity: rawResponse.QueryTaxpayerResponse.taxpayerValidity,
+				data: rawResponse.QueryTaxpayerResponse.taxpayerData
+			};
+			return taxpayer;
 			break;
 		case 'tokenExchange':
 			var tokenEncoded = rawResponse.TokenExchangeResponse.encodedExchangeToken._text;
@@ -99,4 +118,4 @@ function processResponse(requestType, rawResponse, user){
 	}
 }
 
-module.exports.sendRequest = sendRequest;
+module.exports.setRequest = setRequest;

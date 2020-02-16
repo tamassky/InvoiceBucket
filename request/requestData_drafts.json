@@ -1,0 +1,3 @@
+var requestData = {taxNumber: '18298015'};/*queryTaxpayer*/
+var requestData = null; /*tokenExchange*/
+var requestData = 
