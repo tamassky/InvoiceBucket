@@ -1,3 +1,104 @@
 var requestData = {taxNumber: '18298015'};/*queryTaxpayer*/
 var requestData = null; /*tokenExchange*/
-var requestData = 
+var requestData = { /*manageInvoice-create-normal*/
+	invoiceOperation: 'CREATE',
+	invoiceNumber: '2020/300012',
+	invoiceIssueDate: '2020-05-15',
+	originalInvoiceNumber: null,
+	modificationIndex: null,
+	invoiceCategory: 'NORMAL',
+	invoiceDeliveryDate: '2020-05-10',
+	paymentMethod: 'TRANSFER',
+	paymentDate: '2020-05-30',
+	cashAccountingIndicator: false,
+	invoiceAppearance: 'PAPER',
+	supplierTaxpayerId: '10683424',
+	supplierVatCode: '2',
+	supplierCountyCode: '09',
+	supplierName: 'DANIELLA KERESKEDELMI KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG',
+	supplierPostalCode: '4031',
+	supplierCity: 'DEBRECEN',
+	supplierAdditionalAddressDetail: 'KÖNTÖSGÁT SOR 1-3',
+	supplierBankAccountNumber: '88888888-66666666-12345678',
+	individualExemption: false,
+	customerTaxpayerId: '13337940',
+	customerVatCode: '2',
+	customerCountyCode: '09',
+	customerName: 'DANIELLA IPARI PARK SZOLGÁLTATÓ KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG',
+	customerPostalCode: '4031',
+	customerCity: 'DEBRECEN',
+	customerAdditionalAddressDetail: 'KÖNTÖSGÁT SOR 1-3',
+	customerBankAccountNumber: '88888888-66666666-12345679',
+	lines:[
+		{
+			lineNumber: 1,
+			lineNumberReference: null,
+			lineOperation: null,
+			productCodeCategory: 'VTSZ',
+			productCodeValue: '02031110',
+			lineNatureIndicator: 'PRODUCT',
+			lineDescription: 'Hűtött házi sertés',
+			quantity: '1500',
+			unitOfMeasure: 'KILOGRAM',
+			unitOfMeasureOwn: null,
+			unitPrice: '400',
+			intermediatedService: false,
+			lineNetAmount: '600000',
+			vatPercentage: '5',
+			lineVatAmount: '30000',
+			lineGrossAmountNormal: '630000',
+			lineVatContentSimplified: null,
+			lineGrossAmountSimplified null: 
+		},
+		{
+			lineNumber: 2,
+			lineNumberReference: null,
+			lineOperation: null,
+			productCodeCategory: 'VTSZ',
+			productCodeValue: '16010091',
+			lineNatureIndicator: 'PRODUCT',
+			lineDescription: 'Érlelt szalámi',
+			quantity: '1600',
+			unitOfMeasure: 'KILOGRAM',
+			unitOfMeasureOwn: null,
+			unitPrice: '3000',
+			intermediatedService: false,
+			lineNetAmount: '4800000',
+			vatPercentage: '27',
+			lineVatAmount: '1296000',
+			lineGrossAmountNormal: '6096000',
+			lineVatContentSimplified: null,
+			lineGrossAmountSimplified: null
+		}
+	],
+	vatRates:[
+		{
+			vatPercentage: '5',
+			vatExemption: null,
+			vatOutOfScope: null,
+			vatDomesticReverseCharge: null,
+			marginSchemeVat: null,
+			marginSchemeNoVat: null,
+			vatRateNetAmount: '600000',
+			vatRateVatAmount: '30000'
+		},
+		{
+			vatPercentage: '27',
+			vatExemption: null,
+			vatOutOfScope: null,
+			vatDomesticReverseCharge: null,
+			marginSchemeVat: null,
+			marginSchemeNoVat: null,
+			vatRateNetAmount: '4800000',
+			vatRateVatAmount: '1296000'
+		}
+	],
+	invoiceNetAmount: '5400000‬',
+	invoiceVatAmount: '1326000‬',
+	vatContent: null,
+	vatContentGrossAmount: null,
+	invoiceGrossAmount: '6726000' 
+};
+var requestData = { /*manageInvoice-modify*/
+	invoiceOperation: 'MODIFY',
+};

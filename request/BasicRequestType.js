@@ -19,17 +19,17 @@ Date.prototype.mask = function mask () {
 	return year + month + day + hour + minute + second;
 }
 
-function buildBasicRequestType(requestId, user, indexhash){
+function buildBasicRequestType(requestId, user, indexHashExists, indexHash){
 	
 	var hashPassword 		= sha512(user.password).toUpperCase();
 	var date_now			= new Date();
 	var utctime 			= date_now.toISOString()
 	var partial				= requestId + date_now.mask() + user.xmlsign;
 	console.log(partial);
-	if(indexhash == false)
+	if(indexHashExists)
+		var requestSignature = sha3_512(partial + indexHash).toUpperCase();
+	else
 		var requestSignature = sha3_512(partial).toUpperCase();
-	/*else
-		var requestSignature = sha3_512(partial + valami + valami)*/
 	
 	var reqbody = '';	
 	reqbody = reqbody + '<header>';

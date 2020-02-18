@@ -7,20 +7,21 @@ var aes				= require('aes-ecb');
 var manageInvoice			= require("./manageInvoice");
 //var queryInvoiceCheck		= require("./queryInvoiceCheck");
 //var queryInvoiceData		= require("./queryInvoiceData");
-//var queryInvoiceDigest		= require("./queryInvoiceDigest");
 //var queryTransactionStatus	= require("./queryTransactionStatus");
 var queryTaxpayer			= require("./queryTaxpayer");
 var tokenExchange			= require("./tokenExchange");
 
-var user = {
-	login: 'aar1zbooepaxmwu',/*parameter*/
+var user = {/*parameter*/
+	login: 'aar1zbooepaxmwu',
 	password: 'Kota1706',
 	xmlsign: '52-8227-88b7adf566682KAPEQ0GTENJ',
 	xmlexchange: '78112KAPEQ0H1XDY',
 	taxNumber: '10683424'
 };
 
-var replyToClient = setRequest('queryTaxpayer', user, requestData);
+var requestData = {taxNumber: '13337940'};/*queryTaxpayer*/
+
+var replyToClient = setRequest('tokenExchange', user, null);
 new Promise((resolve, reject) => { 
 	if (replyToClient)
 		resolve(replyToClient);
@@ -35,17 +36,23 @@ async function setRequest(requestType, user, requestData){
 
 	var reqbody;
 	var processedResponse;
+	var token;
 
 	switch(requestType){
 		case 'manageAnnulment':
 			break;
 		case 'manageInvoice':
+			var tokenReply = setRequest('tokenExchange', user, null);
+			new Promise((resolve, reject) => { 
+				if (tokenReply)
+					resolve(tokenReply);
+			})
+			.then(tokenReply => token = tokenReply);
+			reqbody = manageInvoice.buildManageInvoice(requestId, user, requestData, token);
 			break;
 		case 'queryInvoiceCheck':
 			break;
 		case 'queryInvoiceData':
-			break;
-		case 'queryInvoiceDigest':
 			break;
 		case 'queryTransactionStatus':
 			break;
@@ -98,8 +105,6 @@ function processResponse(requestType, rawResponse, user){
 		case 'queryInvoiceCheck':
 			break;
 		case 'queryInvoiceData':
-			break;
-		case 'queryInvoiceDigest':
 			break;
 		case 'queryTransactionStatus':
 			break;
