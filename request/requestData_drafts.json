@@ -47,7 +47,7 @@ var requestData = { /*manageInvoice-create-normal*/
 			vatPercentage: '5',
 			lineVatAmount: '30000',
 			lineVatContentSimplified: null,
-			lineGrossAmountSimplified null: 
+			lineGrossAmountSimplified: null 
 		},
 		{
 			lineNumber: 2,
