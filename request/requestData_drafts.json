@@ -91,8 +91,8 @@ var requestData = { /*manageInvoice-create-normal*/
 			vatRateVatAmount: '1296000'
 		}
 	],
-	invoiceNetAmount: '5400000‬',
-	invoiceVatAmount: '1326000‬',
+	invoiceNetAmount: '5400000',
+	invoiceVatAmount: '1326000',
 	vatContent: null,
 	vatContentGrossAmount: null,
 	invoiceGrossAmount: '6726000' 
@@ -100,3 +100,9 @@ var requestData = { /*manageInvoice-create-normal*/
 var requestData = { /*manageInvoice-modify*/
 	invoiceOperation: 'MODIFY',
 };
+var requestData = { //manageAnnulment
+	annulmentReference: '2020/300012',
+	annulmentTimestamp: timestamp.toISOString(),
+	annulmentCode: 'ERRATIC_DATA',
+	annulmentReason: 'testing'
+}

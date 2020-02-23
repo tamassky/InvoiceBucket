@@ -143,8 +143,8 @@ function buildInvoiceData(data){
 			invoicedata = invoicedata + '<lineVatAmountHUF>' + data.lines[i].lineVatAmount + '</lineVatAmountHUF>';
 			invoicedata = invoicedata + '</lineVatData>';
 			invoicedata = invoicedata + '<lineGrossAmountData>';
-			invoicedata = invoicedata + '<lineGrossAmountNormal>' + (data.lines[i].lineNetAmount + data.lines[i].lineVatAmount) + '</lineGrossAmountNormal>';
-			invoicedata = invoicedata + '<lineGrossAmountNormalHUF>' + (data.lines[i].lineNetAmount + data.lines[i].lineVatAmount) + '</lineGrossAmountNormalHUF>';
+			invoicedata = invoicedata + '<lineGrossAmountNormal>' + (Number(data.lines[i].lineNetAmount) + Number(data.lines[i].lineVatAmount)) + '</lineGrossAmountNormal>';
+			invoicedata = invoicedata + '<lineGrossAmountNormalHUF>' + (Number(data.lines[i].lineNetAmount) + Number(data.lines[i].lineVatAmount)) + '</lineGrossAmountNormalHUF>';
 			invoicedata = invoicedata + '</lineGrossAmountData>';
 			invoicedata = invoicedata + '</lineAmountsNormal>';
 		}
@@ -218,9 +218,8 @@ function buildInvoiceData(data){
 	invoicedata = invoicedata + '</invoiceMain>';
 	invoicedata = invoicedata + '</InvoiceData>';
 	
-	console.log(invoicedata);
+	console.log(invoicedata);/**/
 	return Base64.encode(invoicedata);
-	
 }
 
 module.exports.buildInvoiceData = buildInvoiceData;
