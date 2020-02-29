@@ -21,7 +21,7 @@ Date.prototype.mask = function mask () {
 
 function buildBasicRequestType(requestId, user, indexHashExists, indexHash){
 	
-	var hashPassword 		= sha512(user.password).toUpperCase();
+	var hashPassword 		= user.password.toUpperCase();
 	var date_now			= new Date();
 	var utctime 			= date_now.toISOString()
 	var partial				= requestId + date_now.mask() + user.xmlsign;

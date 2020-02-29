@@ -6,38 +6,35 @@ var util 			= require('util');
 
 var manageAnnulment			= require("./manageAnnulment");
 var manageInvoice			= require("./manageInvoice");
-//var queryInvoiceCheck		= require("./queryInvoiceCheck");
-//var queryInvoiceData		= require("./queryInvoiceData");
-//var queryTransactionStatus	= require("./queryTransactionStatus");
+var queryInvoiceCheck		= require("./queryInvoiceCheck");
+var queryInvoiceData		= require("./queryInvoiceData");
+var queryTransactionStatus	= require("./queryTransactionStatus");
 var queryTaxpayer			= require("./queryTaxpayer");
 var tokenExchange			= require("./tokenExchange");
 
-var timestamp = new Date();/*temp*/
-
 var user = {/*parameter*/
 	login: 'aar1zbooepaxmwu',
-	password: 'Kota1706',
+	password: '2ed63e96d609e096e840c1e16178c72c2f9dd40f2c070903ddc5d6badc1c22f4f783500b954ca0662773a8957735a02c33ca1b4e317ae8ce00da7b12f2016902',
 	xmlsign: '52-8227-88b7adf566682KAPEQ0GTENJ',
 	xmlexchange: '78112KAPEQ0H1XDY',
 	taxNumber: '10683424'
 };
 
-var requestData = { //manageAnnulment
-	annulmentReference: '2020/300012',
-	annulmentTimestamp: timestamp.toISOString(),
-	annulmentCode: 'ERRATIC_DATA',
-	annulmentReason: 'testing'
-}
+var requestData = { /*QueryInvoiceCheck & QueryInvoiceData OUTBOUND*/
+	invoiceNumber: '2020/300013',
+	invoiceDirection: 'OUTBOUND',
+	batchIndex: null,
+	supplierTaxNumber: null
+};
 
-var replyToClient = setRequest('manageAnnulment', user, requestData);
-new Promise((resolve, reject) => { 
-	if (replyToClient)
-		resolve(replyToClient);
-})
-.then(replyToClient => console.log(replyToClient));
+var replyToClient = setRequest('queryInvoiceData', user, requestData); 	/**/
+new Promise((resolve, reject) => { 										/**/
+	if (replyToClient)													/**/
+		resolve(replyToClient);											/**/
+})																		/**/
+.then(replyToClient => console.log(replyToClient));						/**/
 
 async function setRequest(requestType, user, requestData){
-	
 	
 	var date_now	= new Date();
 	var requestId 	= 'IB' + user.login.substring(1, 10) + date_now.mask();
@@ -58,10 +55,13 @@ async function setRequest(requestType, user, requestData){
 			reqbody = await manageInvoice.buildManageInvoice(requestId, user, requestData, token);
 			break;
 		case 'queryInvoiceCheck':
+			reqbody = queryInvoiceCheck.buildQueryInvoiceCheck(requestId, user, requestData);
 			break;
 		case 'queryInvoiceData':
+			reqbody = queryInvoiceData.buildQueryInvoiceData(requestId, user, requestData);
 			break;
 		case 'queryTransactionStatus':
+			reqbody = queryTransactionStatus.buildQueryTransactionStatus(requestId, user, requestData);
 			break;
 		case 'queryTaxpayer':
 			reqbody = queryTaxpayer.buildQueryTaxpayer(requestId, user, requestData);
@@ -111,10 +111,13 @@ function processResponse(requestType, rawResponse, user){
 			return rawResponse.ManageInvoiceResponse.transactionId._text;
 			break;
 		case 'queryInvoiceCheck':
+			return rawResponse.QueryInvoiceCheckResponse.invoiceCheckResult._text;
 			break;
 		case 'queryInvoiceData':
+			return rawResponse.QueryInvoiceDataResponse.invoiceDataResult;
 			break;
 		case 'queryTransactionStatus':
+			return rawResponse.QueryTransactionStatusResponse.processingResults.processingResult;
 			break;
 		case 'queryTaxpayer':
 			var taxpayer = {

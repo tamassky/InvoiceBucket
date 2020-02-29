@@ -2,14 +2,14 @@ var requestData = {taxNumber: '18298015'};/*queryTaxpayer*/
 var requestData = null; /*tokenExchange*/
 var requestData = { /*manageInvoice-create-normal*/
 	invoiceOperation: 'CREATE',
-	invoiceNumber: '2020/300012',
-	invoiceIssueDate: '2020-05-15',
+	invoiceNumber: '2020/300013',
+	invoiceIssueDate: '2020-02-10',
 	originalInvoiceNumber: null,
 	modificationIndex: null,
 	invoiceCategory: 'NORMAL',
-	invoiceDeliveryDate: '2020-05-10',
+	invoiceDeliveryDate: '2020-02-10',
 	paymentMethod: 'TRANSFER',
-	paymentDate: '2020-05-30',
+	paymentDate: '2020-03-10',
 	cashAccountingIndicator: false,
 	invoiceAppearance: 'PAPER',
 	supplierTaxpayerId: '10683424',
@@ -105,4 +105,17 @@ var requestData = { //manageAnnulment
 	annulmentTimestamp: timestamp.toISOString(),
 	annulmentCode: 'ERRATIC_DATA',
 	annulmentReason: 'testing'
-}
+};
+var requestData = '2VKZZWHMYVYKGZ25'; //queryTransactionStatus
+var requestData = { /*QueryInvoiceCheck & QueryInvoiceData INBOUND*/
+	invoiceNumber: '410085',
+	invoiceDirection: 'INBOUND',
+	batchIndex: null,
+	supplierTaxNumber: '10834895'
+};
+var requestData = { /*QueryInvoiceCheck & QueryInvoiceData OUTBOUND*/
+	invoiceNumber: '2020/300013',
+	invoiceDirection: 'OUTBOUND',
+	batchIndex: null,
+	supplierTaxNumber: null
+};
