@@ -12,6 +12,8 @@ var queryTransactionStatus	= require("./queryTransactionStatus");
 var queryTaxpayer			= require("./queryTaxpayer");
 var tokenExchange			= require("./tokenExchange");
 
+var timestamp = new Date(); /**/
+
 var user = {/*parameter*/
 	login: 'aar1zbooepaxmwu',
 	password: '2ed63e96d609e096e840c1e16178c72c2f9dd40f2c070903ddc5d6badc1c22f4f783500b954ca0662773a8957735a02c33ca1b4e317ae8ce00da7b12f2016902',
@@ -20,19 +22,14 @@ var user = {/*parameter*/
 	taxNumber: '10683424'
 };
 
-var requestData = { /*QueryInvoiceCheck & QueryInvoiceData OUTBOUND*/
-	invoiceNumber: '2020/300013',
-	invoiceDirection: 'OUTBOUND',
-	batchIndex: null,
-	supplierTaxNumber: null
-};
+var requestData = '2VUYC6FBBZSSIR4V'; //queryTransactionStatus
 
-var replyToClient = setRequest('queryInvoiceData', user, requestData); 	/**/
-new Promise((resolve, reject) => { 										/**/
-	if (replyToClient)													/**/
-		resolve(replyToClient);											/**/
-})																		/**/
-.then(replyToClient => console.log(replyToClient));						/**/
+var replyToClient = setRequest('queryTransactionStatus', user, requestData); 	/**/
+new Promise((resolve, reject) => { 												/**/
+	if (replyToClient)															/**/
+		resolve(replyToClient);													/**/
+})																				/**/
+.then(replyToClient => console.log(replyToClient));								/**/
 
 async function setRequest(requestType, user, requestData){
 	

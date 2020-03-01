@@ -102,32 +102,42 @@ function buildInvoiceData(data){
 			invoicedata = invoicedata + '</lineModificationReference>';
 		}
 		if(data.lines[i].productCodeValue){
-		invoicedata = invoicedata + '<productCodes>';
-		invoicedata = invoicedata + '<productCode>';
-		invoicedata = invoicedata + '<productCodeCategory>' + data.lines[i].productCodeCategory + '</productCodeCategory>';
-		if(data.lines[i].productCodeCategory == 'OWN'){
-			invoicedata = invoicedata + '<productCodeOwnValue>' + data.lines[i].productCodeValue + '</productCodeOwnValue>';
+			invoicedata = invoicedata + '<productCodes>';
+			invoicedata = invoicedata + '<productCode>';
+			invoicedata = invoicedata + '<productCodeCategory>' + data.lines[i].productCodeCategory + '</productCodeCategory>';
+			if(data.lines[i].productCodeCategory == 'OWN'){
+				invoicedata = invoicedata + '<productCodeOwnValue>' + data.lines[i].productCodeValue + '</productCodeOwnValue>';
+			}
+			else{
+				invoicedata = invoicedata + '<productCodeValue>' + data.lines[i].productCodeValue + '</productCodeValue>';
+			}
+			invoicedata = invoicedata + '</productCode>';
+			invoicedata = invoicedata + '</productCodes>';
 		}
-		else{
-			invoicedata = invoicedata + '<productCodeValue>' + data.lines[i].productCodeValue + '</productCodeValue>';
+		if(data.lines[i].lineExpressionIndicator){
+			invoicedata = invoicedata + '<lineExpressionIndicator>' + data.lines[i].lineExpressionIndicator + '</lineExpressionIndicator>';
 		}
-		invoicedata = invoicedata + '</productCode>';
-		invoicedata = invoicedata + '</productCodes>';
-		}
-		invoicedata = invoicedata + '<lineExpressionIndicator>true</lineExpressionIndicator>';
 		if(data.lines[i].lineNatureIndicator){
 			invoicedata = invoicedata + '<lineNatureIndicator>' + data.lines[i].lineNatureIndicator + '</lineNatureIndicator>';
 		}
-		invoicedata = invoicedata + '<lineDescription>' + data.lines[i].lineDescription + '</lineDescription>';
-		invoicedata = invoicedata + '<quantity>' + data.lines[i].quantity + '</quantity>';
-		invoicedata = invoicedata + '<unitOfMeasure>' + data.lines[i].unitOfMeasure + '</unitOfMeasure>';
+		if(data.lines[i].lineDescription){
+			invoicedata = invoicedata + '<lineDescription>' + data.lines[i].lineDescription + '</lineDescription>';
+		}
+		if(data.lines[i].quantity){
+			invoicedata = invoicedata + '<quantity>' + data.lines[i].quantity + '</quantity>';
+		}
+		if(data.lines[i].unitOfMeasure){
+			invoicedata = invoicedata + '<unitOfMeasure>' + data.lines[i].unitOfMeasure + '</unitOfMeasure>';
+		}
 		if(data.lines[i].unitOfMeasure == 'OWN'){
 			invoicedata = invoicedata + '<unitOfMeasureOwn>' + data.lines[i].unitOfMeasureOwn + '</unitOfMeasureOwn>';
 		}
-		invoicedata = invoicedata + '<unitPrice>' + data.lines[i].unitPrice + '</unitPrice>';
-		invoicedata = invoicedata + '<unitPriceHUF>' + data.lines[i].unitPrice + '</unitPriceHUF>';
+		if(data.lines[i].unitPrice){
+			invoicedata = invoicedata + '<unitPrice>' + data.lines[i].unitPrice + '</unitPrice>';
+			invoicedata = invoicedata + '<unitPriceHUF>' + data.lines[i].unitPrice + '</unitPriceHUF>';
+		}
 		if(data.lines[i].intermediatedService){
-		invoicedata = invoicedata + '<intermediatedService>' + data.lines[i].intermediatedService + '</intermediatedService>';
+			invoicedata = invoicedata + '<intermediatedService>' + data.lines[i].intermediatedService + '</intermediatedService>';
 		}
 		if(data.invoiceCategory == 'NORMAL'){
 			invoicedata = invoicedata + '<lineAmountsNormal>';
@@ -136,7 +146,7 @@ function buildInvoiceData(data){
 			invoicedata = invoicedata + '<lineNetAmountHUF>' + data.lines[i].lineNetAmount + '</lineNetAmountHUF>';
 			invoicedata = invoicedata + '</lineNetAmountData>';
 			invoicedata = invoicedata + '<lineVatRate>';
-			invoicedata = invoicedata + '<vatPercentage>' + (data.lines[i].vatPercentage / 100).toString() + '</vatPercentage>';
+			invoicedata = invoicedata + '<vatPercentage>' + data.lines[i].vatPercentage.toString() + '</vatPercentage>';
 			invoicedata = invoicedata + '</lineVatRate>';
 			invoicedata = invoicedata + '<lineVatData>';
 			invoicedata = invoicedata + '<lineVatAmount>' + data.lines[i].lineVatAmount + '</lineVatAmount>';
@@ -150,7 +160,7 @@ function buildInvoiceData(data){
 		}
 		if(data.invoiceCategory == 'SIMPLIFIED'){
 			invoicedata = invoicedata + '<lineAmountsSimplified>';
-			invoicedata = invoicedata + '<lineVatContent>' +  (data.lines[i].lineVatContentSimplified / 100).toString() + '</lineVatContent>';
+			invoicedata = invoicedata + '<lineVatContent>' +  data.lines[i].lineVatContentSimplified.toString() + '</lineVatContent>';
 			invoicedata = invoicedata + '<lineGrossAmountSimplified>' + data.lines[i].lineGrossAmountSimplified + '</lineGrossAmountSimplified>';
 			invoicedata = invoicedata + '<lineGrossAmountSimplifiedHUF>' + data.lines[i].lineGrossAmountSimplified + '</lineGrossAmountSimplifiedHUF>';
 			invoicedata = invoicedata + '</lineAmountsSimplified>';
@@ -167,7 +177,7 @@ function buildInvoiceData(data){
 			invoicedata = invoicedata + '<summaryByVatRate>';
 			invoicedata = invoicedata + '<vatRate>';
 			if(data.vatRates[i].vatPercentage){
-				invoicedata = invoicedata + '<vatPercentage>' + (data.vatRates[i].vatPercentage / 100).toString() + '</vatPercentage>';
+				invoicedata = invoicedata + '<vatPercentage>' + vatRates[i].vatPercentage.toString() + '</vatPercentage>';
 			}
 			if(data.vatRates[i].vatExemption){
 				invoicedata = invoicedata + '<vatExemption>' + data.vatRates[i].vatExemption + '</vatExemption>';
@@ -200,18 +210,18 @@ function buildInvoiceData(data){
 		invoicedata = invoicedata + '<invoiceVatAmount>' + data.invoiceVatAmount + '</invoiceVatAmount>';
 		invoicedata = invoicedata + '<invoiceVatAmountHUF>' + data.invoiceVatAmount + '</invoiceVatAmountHUF>';
 		invoicedata = invoicedata + '</summaryNormal>';
-		invoicedata = invoicedata + '<summaryGrossData>';
-		invoicedata = invoicedata + '<invoiceGrossAmount>' + data.invoiceGrossAmount + '</invoiceGrossAmount>';
-		invoicedata = invoicedata + '<invoiceGrossAmountHUF>' + data.invoiceGrossAmount + '</invoiceGrossAmountHUF>';
-		invoicedata = invoicedata + '</summaryGrossData>';
 	}
 	if(data.invoiceCategory == 'SIMPLIFIED'){
 		invoicedata = invoicedata + '<summarySimplified>';
-		invoicedata = invoicedata + '<vatContent>' + (data.vatContent / 100).toString() + '</vatContent>';
+		invoicedata = invoicedata + '<vatContent>' + data.vatContent.toString() + '</vatContent>';
 		invoicedata = invoicedata + '<vatContentGrossAmount>' + data.invoiceGrossAmount + '</vatContentGrossAmount>';
 		invoicedata = invoicedata + '<vatContentGrossAmountHUF>' + data.invoiceGrossAmount + '</vatContentGrossAmountHUF>';
 		invoicedata = invoicedata + '</summarySimplified>';
 	}
+	invoicedata = invoicedata + '<summaryGrossData>';
+	invoicedata = invoicedata + '<invoiceGrossAmount>' + data.invoiceGrossAmount + '</invoiceGrossAmount>';
+	invoicedata = invoicedata + '<invoiceGrossAmountHUF>' + data.invoiceGrossAmount + '</invoiceGrossAmountHUF>';
+	invoicedata = invoicedata + '</summaryGrossData>';
 	invoicedata = invoicedata + '</invoiceSummary>';
 	
 	invoicedata = invoicedata + '</invoice>';
