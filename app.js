@@ -1,6 +1,3 @@
-//export DATABASEURL='mongodb://localhost:27017/invoicebucket'
-//export PORT='3000'
-//export APIURL='https://api-test.onlineszamla.nav.gov.hu/invoiceService/v2/'
 var express 		= require("express"),
 	app 			= express(),
 	bodyParser 		= require("body-parser"),
@@ -8,6 +5,9 @@ var express 		= require("express"),
 	methodOverride  = require("method-override"),
 	session 		= require('express-session'),
 	mongoose 		= require("mongoose"),
+	flash			= require("connect-flash"),
+	
+	User 			= require("./models/user"),
 	
 	indexRoutes		= require("./routes/index"),
 	
@@ -15,9 +15,12 @@ var express 		= require("express"),
 	databaseurl		= process.env.DATABASEURL;
 
 mongoose.set('useUnifiedTopology', true);
+mongoose.set('useCreateIndex', true);
 mongoose.connect(databaseurl, { useNewUrlParser: true });
 
 app.set("view engine", "ejs");
+
+app.use(flash());
 
 app.use(express.static(__dirname + "/public"));
 
@@ -31,9 +34,17 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 600000
+        expires: 1800000
     }
 }));
+
+
+/*app.use(function(req, res, next){
+	res.locals.currentUser = req.user;
+	res.locals.error = req.flash("error");
+	res.locals.success = req.flash("success");	
+	next();
+});*/
 
 app.use("/", indexRoutes);
 

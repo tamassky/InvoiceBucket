@@ -1,14 +1,13 @@
 var mongoose = require("mongoose");
 
-var userSchema = new.mongoose.Schema({
-	username: String,
+var userSchema = new mongoose.Schema({
+	username: { type: String, unique: true},
 	password: String,
 	navUsername: String,
 	navPassword: String,
 	xmlsign: String,
 	xmlexchange: String,
 	taxNumber: String,
-	displayName: String,
 	taxpayerName: String,
 	creationDate: Date,
 	lastUpdateDate: Date

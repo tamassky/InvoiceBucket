@@ -23,9 +23,12 @@
 			</div>
 		</nav>
 		<div class="container">
-			<div class="jumbotron">
+			<div class="jumbotron text-center">
 		  		<h1>Regisztráció</h1>
-		  		<p>A regisztráláshoz adj meg egy felhasználói azonosítót és egy megfelelően erős jelszót!</p>
+				<br>
+		  		<h4>A regisztráláshoz adj meg egy felhasználói azonosítót és egy megfelelően erős jelszót!
+				<br>
+				(Legalább 8 karakter hosszú legyen, valamint tartalmazzon kisbetűt, nagybetűt és számot egyaránt!)</h4>
 			</div>
 			<div class="row">
 				<div style="width: 30%; margin: 25px auto;">
@@ -37,7 +40,6 @@
 						<div class="form-group">
 							<label>Jelszó *</label>
 							<input class="form-control" type="password" name="password">
-							<small class="form-text text-muted">Legalább 8 karakter hosszú legyen, valamint tartalmazzon kisbetűt, nagybetűt és számot egyaránt!</small>
 						</div>
 						<div class="form-group">
 							<label>Jelszó megerősítése *</label>
@@ -83,10 +85,6 @@
 							regexp: {	
 								regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,100}$/,
 								message: 'Túl gyenge jelszó'
-							},
-							stringLength: {
-								max: 30,
-								message: 'Túl hosszú jelszó'
 							},
 							notEmpty: {
 								message: 'Kötelező mező'
