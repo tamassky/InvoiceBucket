@@ -12,16 +12,36 @@
 				</div>
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav navbar-right">
-						<li>
-							<a href="/login">Bejelentkezés</a>
-						</li>
-						<li>
-							<a href="/register">Regisztráció</a>
-						</li>	
+						<% if(!username){ %>
+							<li>
+								<a href="/login">Bejelentkezés</a>
+							</li>
+							<li>
+								<a href="/register">Regisztráció</a>
+							</li>
+						<% } else { %>
+							<li>
+								<a href="#">Bejelentkezve mint <strong><%= username %></strong></a>
+							</li>
+							<li>
+								<a href="/logout">Kijelentkezés</a>
+							</li>
+						<% } %>
 					</ul>
 				</div>
 			</div>
 		</nav>
-			
+		<div class="container text-center">
+			<% if(error && error.length > 0){ %>
+			<div class="alert alert-danger" role="alert">
+				<%= error %>
+			</div>	
+			<% } %>
+			<% if(success && success.length > 0){ %>
+			<div class="alert alert-success" role="alert">
+				<%= success %>
+			</div>	
+			<% } %>
+		</div>	
 	</body>
 </html>

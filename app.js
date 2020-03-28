@@ -20,8 +20,6 @@ mongoose.connect(databaseurl, { useNewUrlParser: true });
 
 app.set("view engine", "ejs");
 
-app.use(flash());
-
 app.use(express.static(__dirname + "/public"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -38,13 +36,14 @@ app.use(session({
     }
 }));
 
+app.use(flash());
 
-/*app.use(function(req, res, next){
-	res.locals.currentUser = req.user;
+app.use(function(req, res, next){
+	//res.locals.currentUser = req.user;
 	res.locals.error = req.flash("error");
 	res.locals.success = req.flash("success");	
 	next();
-});*/
+});
 
 app.use("/", indexRoutes);
 

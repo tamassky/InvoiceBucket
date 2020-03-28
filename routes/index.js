@@ -7,7 +7,7 @@ var date_now	= new Date();
 
 //show landing page
 router.get("/", function(req, res){
-	res.render("landing");
+	res.render("landing", {username: req.session.username});
 });
 
 //show registration page
@@ -35,9 +35,8 @@ router.post("/register", function(req, res){
 			req.flash("error", err.message);
 			return res.redirect("/register");
 		}
-		req.session.user = user.dataValues;
+		req.session.username = user.username;
 		req.flash("success", "Regisztráció sikeres");
-		console.log(req.session.user);/**/
         res.redirect('/');
 	});
 });
@@ -54,12 +53,22 @@ router.post("/login", function(req, res){
 	        console.log(err);
 			req.flash("error", err.message);
 			return res.redirect("/login");
+        }
+		if(!user){
+			req.flash("error", "Hibás belépési adatok!");
+			return res.redirect("/login");
         } 
-        req.session.user = user.dataValues;
+        req.session.username = user.username;
         req.flash("success", "Sikeres bejelentkezés");
-		console.log(req.session.user);/**/
 		res.redirect('/');
     });
+});
+
+//logout loginc
+router.get("/logout", function(req, res){
+	req.session.username = undefined;
+	req.flash("success", "Sikeres kijelentkezés");
+	res.redirect('/');
 });
 
 module.exports = router;
