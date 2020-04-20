@@ -12,7 +12,10 @@ router.get("/", function(req, res){
 
 //show registration page
 router.get("/register", function(req, res){
-	res.render("register");
+	if(!req.session.username)
+		res.render("register");
+	else
+		res.redirect('/');
 });
 
 //registration logic
@@ -32,7 +35,10 @@ router.post("/register", function(req, res){
 	function(err, user){
 		if(err){
 			console.log(err);
-			req.flash("error", err.message);
+			if(err.code = 11000)
+				req.flash("error", "Ez a felhasználónév már foglalt!");
+			else
+				req.flash("error", err.message);
 			return res.redirect("/register");
 		}
 		req.session.username = user.username;
@@ -43,7 +49,10 @@ router.post("/register", function(req, res){
 
 //show login page
 router.get("/login", function(req, res){
-	res.render("login");
+	if(!req.session.username)
+		res.render("login");
+	else
+		res.redirect('/');
 });
 
 //login logic
@@ -64,11 +73,20 @@ router.post("/login", function(req, res){
     });
 });
 
-//logout loginc
+//logout logic
 router.get("/logout", function(req, res){
 	req.session.username = undefined;
 	req.flash("success", "Sikeres kijelentkezés");
 	res.redirect('/');
+});
+
+//show technical data maintenance form
+router.get("/techdata", function(req, res){
+	if(req.session.username)
+		res.render("techdata", {username: req.session.username});
+	else
+		res.redirect('/login');
+	
 });
 
 module.exports = router;

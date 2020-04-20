@@ -1,18 +1,18 @@
-var express 		= require("express"),
-	app 			= express(),
-	bodyParser 		= require("body-parser"),
-	cookieParser 	= require('cookie-parser'),
-	methodOverride  = require("method-override"),
-	session 		= require('express-session'),
-	mongoose 		= require("mongoose"),
-	flash			= require("connect-flash"),
+var express 			= require("express"),
+	app 				= express(),
+	bodyParser 			= require("body-parser"),
+	cookieParser 		= require('cookie-parser'),
+	methodOverride  	= require("method-override"),
+	session 			= require('express-session'),
+	mongoose 			= require("mongoose"),
+	flash				= require("connect-flash"),
 	
-	User 			= require("./models/user"),
+	User 				= require("./models/user"),
 	
-	indexRoutes		= require("./routes/index"),
+	indexRoutes			= require("./routes/index"),
 	
-	port 			= process.env.PORT,
-	databaseurl		= process.env.DATABASEURL;
+	port 				= process.env.PORT,
+	databaseurl			= process.env.DATABASEURL;
 
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useCreateIndex', true);
