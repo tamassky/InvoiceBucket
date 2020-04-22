@@ -87,7 +87,6 @@ router.get("/techdata", function(req, res){
 		res.render("techdata", {username: req.session.username});
 	else
 		res.redirect('/login');
-	
 });
 
 //save technical data
@@ -221,6 +220,96 @@ router.post("/pass", function(req, res){
 			}
 			req.flash("success", "Jelszóváltoztatás sikeres");
 			res.redirect('/');
+		});
+    });
+});
+
+//view taxpayer info form
+router.get("/taxpayerdata", function(req, res){
+	if(req.session.username)
+		res.render("taxpayerdata", {username: req.session.username});
+	else
+		res.redirect('/login');	
+});
+
+//query taxpayer taxpayerdata
+router.post("/taxpayerdata", function(req, res){
+	User.findOne({username: req.session.username, password: sha512(req.body.password)}, function(err, user) {
+		if(err){
+	        console.log(err);
+			req.flash("error", err.message);
+			return res.redirect("/taxpayerdata");
+        }
+		if(!user){
+			req.flash("error", "Hibás jelszó!");
+			return res.redirect("/taxpayerdata");
+        } 
+		
+		//decrypt technical data
+		var key = req.body.password;
+		if(key.length > 16)
+			key = key.substring(0, 16);
+		while(key.length < 16)
+			key = key + 'X';
+		
+		var navUsername = aes.decrypt(key, user.navUsername);
+		while(navUsername.charCodeAt(navUsername.length - 1) < 32)
+				navUsername = navUsername.slice(0, -1);
+		
+		var navPassword	= aes.decrypt(key, user.navPassword);
+		while(navPassword.charCodeAt(navPassword.length - 1) < 32)
+				navPassword = navPassword.slice(0, -1);
+		
+		var xmlsign 	= aes.decrypt(key, user.xmlsign);
+		while(xmlsign.charCodeAt(xmlsign.length - 1) < 32)
+				xmlsign = xmlsign.slice(0, -1);
+		
+		//send API request
+		var replyToClient = apireq.setRequest('queryTaxpayer', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: null, taxNumber: user.taxNumber}, {taxNumber: req.body.taxNumber}); 	
+		new Promise((resolve, reject) => { 												
+			if (replyToClient)														
+				resolve(replyToClient);													
+		})																				
+		.then(replyToClient => {
+			if(replyToClient == 'request_error'){
+				req.flash("error", "Sikertelen azonosítás vagy érvénytelen adószám");
+				return res.redirect("/taxpayerdata");
+			}
+			else{
+				if(replyToClient == 'server_error'){
+					req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+					return res.redirect("/taxpayerdata");
+				}
+				else{
+					if(replyToClient.validity._text == 'false')
+						req.flash("success", "Az azonosítás sikeres volt, de az adószám nem érvényes.");
+					else{
+						var address = replyToClient.data.taxpayerAddressList.taxpayerAddressItem.taxpayerAddress;
+						req.flash("success", replyToClient.data.taxpayerName._text);
+						if(address.hasOwnProperty(['ns2:postalCode']))
+							req.flash("success", 'Irányítószám: ' + address['ns2:postalCode']._text);
+						if(address.hasOwnProperty(['ns2:city']))
+							req.flash("success", 'Település: ' + address['ns2:city']._text);
+						if(address.hasOwnProperty(['ns2:streetName']))
+							req.flash("success", 'Közterület neve: ' + address['ns2:streetName']._text);
+						if(address.hasOwnProperty(['ns2:publicPlaceCategory']))
+							req.flash("success", 'Közterület jellege: ' + address['ns2:publicPlaceCategory']._text);
+						if(address.hasOwnProperty(['ns2:number']))
+							req.flash("success", 'Házszám: ' + address['ns2:number']._text);
+						if(address.hasOwnProperty(['ns2:building']))
+							req.flash("success", 'Épület: ' + address['ns2:building']._text);
+						if(address.hasOwnProperty(['ns2:staircase']))
+							req.flash("success", 'Lépcsőház: ' + address['ns2:staircase']._text);
+						if(address.hasOwnProperty(['ns2:floor']))
+							req.flash("success", 'Emelet: ' + address['ns2:floor']._text);
+						if(address.hasOwnProperty(['ns2:door']))
+							req.flash("success", 'Ajtó: ' + address['ns2:door']._text);
+						if(address.hasOwnProperty(['ns2:lotNumber']))
+							req.flash("success", 'Helyrajzi szám: ' + address['ns2:lotNumber']._text);
+					}
+					res.redirect('/taxpayerdata');
+				}
+			}
 		});
     });
 });

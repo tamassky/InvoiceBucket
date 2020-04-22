@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>InvoiceBucket</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="/stylesheets/main.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+				  	</button>
+					<a class="navbar-brand" href="/">InvoiceBucket | Hatósági adatszolgáltatás egyszerűen</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<% if(!username){ %>
+							<li>
+								<a href="/login">Bejelentkezés</a>
+							</li>
+							<li>
+								<a href="/register">Regisztráció</a>
+							</li>
+						<% } else { %>
+							<li>
+								<a href="#">Bejelentkezve mint <strong><%= username %></strong></a>
+							</li>
+							<li>
+								<a href="/logout">Kijelentkezés</a>
+							</li>
+						<% } %>
+					</ul>
+				</div>
+			</div>
+			<% if(username){ %>
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-2" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-2">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="/dashboard">Tranzakciók</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Adatmódosítás<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/pass">Jelszó módosítása</a></li>
+								<li><a href="/techdata">Technikai felhasználó adatai</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Számla adatainak lekérdezése<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/arinvoicedata">Vevői számla</a></li>
+								<li><a href="/apinvoicedata">Szállítói számla</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="/taxpayerdata">Adózó adatainak lekérdezése</a>
+						</li>
+					</ul>
+				</div>
+			<% } %>
+		</nav>
+		
+		<div class="container text-center">
+			<% if(error && error.length > 0){ %>
+			<div class="alert alert-danger" role="alert">
+				<%= error %>
+			</div>	
+			<% } %>
+			<% if(success && success.length > 0){ %>
+			<div class="alert alert-success">
+				<% if(success.length === 1) { %>
+				   <%= success %>
+				<% } else { %>
+					<ul style="list-style-type:none;">
+						<% success.forEach(function(suc) { %>
+							<li> <%= suc %> </li>
+						<% }) %>
+					</ul>
+				<% } %> 
+			</div>
+			<% } %>
+		</div>
+		
+		<div class="container">
+			<div class="jumbotron text-center">
+		  		<h1>Adózó adatainak lekérdezése</h1>
+				<br>
+		  		<h4>Add meg a lekérdezni kívánt adózó adószámának első nyolc számjegyét!</h4>
+			</div>
+			<div class="row">
+				<div style="width: 30%; margin: 25px auto;">
+					<form action="/taxpayerdata" method="POST" id="taxpayerForm">
+						<div class="form-group">
+							<label>Adószám első 8 számjegye *</label>
+							<input class="form-control" type="text" name="taxNumber">
+						</div>
+						<div class="form-group">
+							<label>InvoiceBucket jelszó *</label>
+							<input class="form-control" type="password" name="password">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Lekérdezés</button>
+					  	</div>
+					</form>
+					
+				</div>
+			</div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#taxpayerForm').bootstrapValidator({
+				fields: {
+					taxNumber: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							regexp: {
+								regexp: /^[0-9]{8}$/,
+								message: 'Érvénytelen formátum'
+                    		},
+						}
+					},
+					password: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					}
+				}
+			});
+		</script>
+	
+	</body>
+</html>
