@@ -14,7 +14,7 @@ var tokenExchange			= require("./tokenExchange");
 
 var timestamp = new Date(); /**/
 
-var user = {/*parameter*/
+/*var user = {
 	login: 'aar1zbooepaxmwu',
 	password: '2ed63e96d609e096e840c1e16178c72c2f9dd40f2c070903ddc5d6badc1c22f4f783500b954ca0662773a8957735a02c33ca1b4e317ae8ce00da7b12f2016902',
 	xmlsign: '52-8227-88b7adf566682KAPEQ0GTENJ',
@@ -22,14 +22,14 @@ var user = {/*parameter*/
 	taxNumber: '10683424'
 };
 
-var requestData = '2VUYC6FBBZSSIR4V'; //queryTransactionStatus
+var requestData = {taxNumber: '10683424'}; 
 
-var replyToClient = setRequest('queryTransactionStatus', user, requestData); 	/**/
-new Promise((resolve, reject) => { 												/**/
-	if (replyToClient)															/**/
-		resolve(replyToClient);													/**/
-})																				/**/
-.then(replyToClient => console.log(replyToClient));								/**/
+var replyToClient = setRequest('queryTaxpayer', user, requestData); 	
+new Promise((resolve, reject) => { 												
+	if (replyToClient)														
+		resolve(replyToClient);													
+})																				
+.then(replyToClient => console.log(replyToClient));	*/							
 
 async function setRequest(requestType, user, requestData){
 	
@@ -72,8 +72,12 @@ async function setRequest(requestType, user, requestData){
 	const res = await sendRequest(requestType, user, reqbody).catch(err => console.log(err));
 	if (res == 'error')
 		processedResponse = 'request_error';
-	else
-		processedResponse = processResponse(requestType, res, user);
+	else{
+		if (res == 'server_error')
+			processedResponse = 'server_error';
+		else
+			processedResponse = processResponse(requestType, res, user);
+	}
 	return processedResponse;
 }
 
@@ -86,10 +90,13 @@ function sendRequest(requestType, user, reqbody){
 			url: process.env.APIURL + requestType,
 			body: reqbody
 		}, function(error, response, body){
-			if (error) 
-				reject(error);
-        	resp = convert.xml2js(body, { compact: true });
+			if(error)
+				return resolve('server_error');
+			if(!response)
+				return resolve('server_error');
 			console.log(response.statusCode);/**/
+			console.log(body);/**/
+        	resp = convert.xml2js(body, { compact: true });
 			console.log(util.inspect(resp, {showHidden: false, depth: null})); /**/
 			if(response.statusCode != 200)
 				resolve('error');
@@ -126,7 +133,7 @@ function processResponse(requestType, rawResponse, user){
 		case 'tokenExchange':
 			var tokenEncoded = rawResponse.TokenExchangeResponse.encodedExchangeToken._text;
 			var tokenDecoded = aes.decrypt(user.xmlexchange, tokenEncoded)
-			while(tokenDecoded[tokenDecoded.length - 1] == '\u0010')
+			while(tokenDecoded.charCodeAt(tokenDecoded.length - 1) < 32)
 				tokenDecoded = tokenDecoded.slice(0, -1);
 			return tokenDecoded;
 			break;

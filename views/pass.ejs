@@ -88,22 +88,70 @@
 		
 		<div class="container">
 			<div class="jumbotron text-center">
-				<h1>Üdvözöllek az InvoiceBucket alkalmazásban!</h1>
-				<br>
-				<p align="left">Első lépésként regisztrálj, majd add meg a <a href="https://onlineszamla.nav.gov.hu/" target="_blank">Nemzeti Adó- és Vámhivatal rendszerén</a> keresztül igényelt technikai felhasználó adatait. Ezt követően a következő funkciók állnak rendelkezésedre:</p>
-				<br>
-				<p align="left">1. Egyszerűsített számlákról történő adatszolgáltatások, valamint ezek technikai érvénytelenítése (tranzakciók)</p>
-				<p align="left">2. Korábban beküldött tranzakciók állapotának ellenőrzése</p>
-				<p align="left">3. A megadott technikai felhasználóhoz tartozó adóalany számára vagy az adóalany által kiállított számlák adatainak letöltése</p>
-				<p align="left">4. Az adóhatóság nyilvántartásában szereplő adóalanyok adatainak lekérdezése adószám alapján</p>
-				<br>
-				<p align="left">Az alkalmazás forráskódjai megtekinthetők <a href="https://github.com/tamassky/InvoiceBucket" target="_blank">itt</a>, a rendszer szabadon terjeszthető és továbbfejleszthető.</p>
-				<p align="left">Kovács Tamás, a készítő (kapcsolat: <a href="mailto:openbvehu@gmail.com">openbvehu@gmail.com</a>)</p>
+		  		<h1>Jelszó módosítása</h1>
+			</div>
+			<div class="row">
+				<div style="width: 30%; margin: 25px auto;">
+					<form action="/pass" method="POST" id="passForm">
+						<div class="form-group">
+							<label>Jelenlegi jelszó *</label>
+							<input class="form-control" type="password" name="oldPass">
+						</div>
+						<div class="form-group">
+							<label>Új jelszó *</label>
+							<input class="form-control" type="password" name="newPass">
+						</div>
+						<div class="form-group">
+							<label>Új jelszó megerősítése *</label>
+							<input class="form-control" type="password" name="newPassConf">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Megerősítés</button>
+					  	</div>
+					</form>
+					
+				</div>
 			</div>
 		</div>
 		
 		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#passForm').bootstrapValidator({
+				fields: {
+					oldPass: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					newPass: {
+						validators: {
+							regexp: {	
+								regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,100}$/,
+								message: 'Túl gyenge jelszó'
+							},
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					newPassConf: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							identical: {
+								field: 'newPass',
+								message: 'Nem egyezik'
+							}
+						}
+					}
+				}
+			});
+		</script>
 	
 	</body>
 </html>

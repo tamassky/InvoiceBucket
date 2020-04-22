@@ -16,7 +16,7 @@ var express 			= require("express"),
 
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useCreateIndex', true);
-mongoose.connect(databaseurl, { useNewUrlParser: true });
+mongoose.connect(databaseurl, { useNewUrlParser: true, useFindAndModify: false});
 
 app.set("view engine", "ejs");
 
