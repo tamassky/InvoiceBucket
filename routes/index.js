@@ -1,8 +1,10 @@
 var express		= require("express");
 var router		= express.Router();
+var fs 			= require('fs');
 var sha512 		= require('js-sha512').sha512;
 var aes			= require('aes-ecb');
-var User 	 	= require("../models/user");
+var base64 		= require('js-base64').Base64;
+var User 		= require("../models/user");
 var apireq		= require("../request/request");
 
 //show landing page
@@ -159,7 +161,6 @@ router.get("/pass", function(req, res){
 		res.render("pass", {username: req.session.username});
 	else
 		res.redirect('/login');
-	
 });
 
 //save new password
@@ -308,6 +309,196 @@ router.post("/taxpayerdata", function(req, res){
 							req.flash("success", 'Helyrajzi szám: ' + address['ns2:lotNumber']._text);
 					}
 					res.redirect('/taxpayerdata');
+				}
+			}
+		});
+    });
+});
+
+//view outbound invoice data form
+router.get("/arinvoicedata", function(req, res){
+	if(req.session.username)
+		res.render("arinvoicedata", {username: req.session.username});
+	else
+		res.redirect('/login');	
+});
+
+//query outbound invoice data
+router.post("/arinvoicedata", function(req, res){
+	User.findOne({username: req.session.username, password: sha512(req.body.password)}, function(err, user) {
+		if(err){
+	        console.log(err);
+			req.flash("error", err.message);
+			return res.redirect("/arinvoicedata");
+        }
+		if(!user){
+			req.flash("error", "Hibás jelszó!");
+			return res.redirect("/arinvoicedata");
+        } 
+		
+		//decrypt technical data
+		var key = req.body.password;
+		if(key.length > 16)
+			key = key.substring(0, 16);
+		while(key.length < 16)
+			key = key + 'X';
+		
+		var navUsername = aes.decrypt(key, user.navUsername);
+		while(navUsername.charCodeAt(navUsername.length - 1) < 32)
+				navUsername = navUsername.slice(0, -1);
+		
+		var navPassword	= aes.decrypt(key, user.navPassword);
+		while(navPassword.charCodeAt(navPassword.length - 1) < 32)
+				navPassword = navPassword.slice(0, -1);
+		
+		var xmlsign 	= aes.decrypt(key, user.xmlsign);
+		while(xmlsign.charCodeAt(xmlsign.length - 1) < 32)
+				xmlsign = xmlsign.slice(0, -1);
+		
+		//send API request
+		var replyToClient = apireq.setRequest('queryInvoiceCheck', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: null, taxNumber: user.taxNumber}, {invoiceNumber: req.body.invoiceNumber, invoiceDirection: 'OUTBOUND', batchIndex: null, supplierTaxNumber: null}); 	
+		new Promise((resolve, reject) => { 												
+			if (replyToClient)														
+				resolve(replyToClient);													
+		})																				
+		.then(replyToClient => {
+			if(replyToClient == 'request_error'){
+				req.flash("error", "Hiba a kérés teljesítése közben");
+				return res.redirect("/arinvoicedata");
+			}
+			else{
+				if(replyToClient == 'server_error'){
+					req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+					return res.redirect("/arinvoicedata");
+				}
+				else{
+					if(replyToClient == 'false'){
+						req.flash("error", "Nem létező számla");
+						return res.redirect('/arinvoicedata');
+					}
+					else{
+						var replyToClient2 = apireq.setRequest('queryInvoiceData', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: null, taxNumber: user.taxNumber}, {invoiceNumber: req.body.invoiceNumber, invoiceDirection: 'OUTBOUND', batchIndex: null, supplierTaxNumber: null}); 	
+						new Promise((resolve, reject) => { 												
+							if (replyToClient2)														
+								resolve(replyToClient2);													
+						})																				
+						.then(replyToClient2 => {
+							if(replyToClient2 == 'request_error'){
+								req.flash("error", "Hiba a kérés teljesítése közben");
+								return res.redirect("/arinvoicedata");
+							}
+							else{
+								if(replyToClient2 == 'server_error'){
+									req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+									return res.redirect("/arinvoicedata");
+								}
+								else{
+									var tofile = base64.decode(replyToClient2.invoiceData._text);
+									
+									fs.writeFileSync(user.username + "_invoice_data.xml", tofile);
+									
+									res.download(user.username + "_invoice_data.xml", function(err){
+										fs.unlinkSync(user.username + "_invoice_data.xml");
+									});
+								}
+							}
+						});
+					}
+				}
+			}
+		});
+    });
+});
+
+//view inbound invoice data form
+router.get("/apinvoicedata", function(req, res){
+	if(req.session.username)
+		res.render("apinvoicedata", {username: req.session.username});
+	else
+		res.redirect('/login');	
+});
+
+//query inbound invoice data
+router.post("/apinvoicedata", function(req, res){
+	User.findOne({username: req.session.username, password: sha512(req.body.password)}, function(err, user) {
+		if(err){
+	        console.log(err);
+			req.flash("error", err.message);
+			return res.redirect("/apinvoicedata");
+        }
+		if(!user){
+			req.flash("error", "Hibás jelszó!");
+			return res.redirect("/apinvoicedata");
+        } 
+		
+		//decrypt technical data
+		var key = req.body.password;
+		if(key.length > 16)
+			key = key.substring(0, 16);
+		while(key.length < 16)
+			key = key + 'X';
+		
+		var navUsername = aes.decrypt(key, user.navUsername);
+		while(navUsername.charCodeAt(navUsername.length - 1) < 32)
+				navUsername = navUsername.slice(0, -1);
+		
+		var navPassword	= aes.decrypt(key, user.navPassword);
+		while(navPassword.charCodeAt(navPassword.length - 1) < 32)
+				navPassword = navPassword.slice(0, -1);
+		
+		var xmlsign 	= aes.decrypt(key, user.xmlsign);
+		while(xmlsign.charCodeAt(xmlsign.length - 1) < 32)
+				xmlsign = xmlsign.slice(0, -1);
+		
+		//send API request
+		var replyToClient = apireq.setRequest('queryInvoiceCheck', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: null, taxNumber: user.taxNumber}, {invoiceNumber: req.body.invoiceNumber, invoiceDirection: 'INBOUND', batchIndex: null, supplierTaxNumber: req.body.taxNumber}); 	
+		new Promise((resolve, reject) => { 												
+			if (replyToClient)														
+				resolve(replyToClient);													
+		})																				
+		.then(replyToClient => {
+			if(replyToClient == 'request_error'){
+				req.flash("error", "Hiba a kérés teljesítése közben");
+				return res.redirect("/apinvoicedata");
+			}
+			else{
+				if(replyToClient == 'server_error'){
+					req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+					return res.redirect("/apinvoicedata");
+				}
+				else{
+					if(replyToClient == 'false'){
+						req.flash("error", "Nem létező számla");
+						return res.redirect('/apinvoicedata');
+					}
+					else{
+						var replyToClient2 = apireq.setRequest('queryInvoiceData', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: null, taxNumber: user.taxNumber}, {invoiceNumber: req.body.invoiceNumber, invoiceDirection: 'INBOUND', batchIndex: null, supplierTaxNumber: req.body.taxNumber}); 	
+						new Promise((resolve, reject) => { 												
+							if (replyToClient2)														
+								resolve(replyToClient2);													
+						})																				
+						.then(replyToClient2 => {
+							if(replyToClient2 == 'request_error'){
+								req.flash("error", "Hiba a kérés teljesítése közben");
+								return res.redirect("/apinvoicedata");
+							}
+							else{
+								if(replyToClient2 == 'server_error'){
+									req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+									return res.redirect("/apinvoicedata");
+								}
+								else{
+									var tofile = base64.decode(replyToClient2.invoiceData._text);
+									
+									fs.writeFileSync(user.username + "_invoice_data.xml", tofile);
+									
+									res.download(user.username + "_invoice_data.xml", function(err){
+										fs.unlinkSync(user.username + "_invoice_data.xml");
+									});
+								}
+							}
+						});
+					}
 				}
 			}
 		});

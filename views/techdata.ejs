@@ -28,7 +28,7 @@
 							</li>
 						<% } else { %>
 							<li>
-								<a href="#">Bejelentkezve mint <strong><%= username %></strong></a>
+								<a href="#">Bejelentkezve mint <strong><%= username.substring(0, 30) %></strong></a>
 							</li>
 							<li>
 								<a href="/logout">Kijelentkezés</a>
