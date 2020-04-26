@@ -1,11 +1,19 @@
 var BasicRequestType 	= require("./BasicRequestType");
-var InvoiceData 		= require("./InvoiceData");
+var InvoiceData 		= require("./InvoiceDataSimplifiedCreate");
 var sha3_512 			= require('js-sha3').sha3_512;
 
 function buildManageInvoice(requestId, user, data, token) {
 
-    var invoiceDataInBase64 = InvoiceData.buildInvoiceData(data);
-	var indexhash 			= sha3_512(data.invoiceOperation + invoiceDataInBase64).toUpperCase();
+    var invoiceDataInBase64;
+	
+	/*Currentry only CREATE transaction is supported for SIMPLIFIED invoices. This is where to create branches when support becomes available for other types of data transactions*/
+	if(data.invoiceCategory == 'SIMPLIFIED'){
+		if(data.invoiceOperation == 'CREATE'){
+			invoiceDataInBase64 = InvoiceDataSimplifiedCreate.buildInvoiceData(data);
+		}
+	}
+	
+	var indexhash = sha3_512(data.invoiceOperation + invoiceDataInBase64).toUpperCase();
     
     var reqbody = '';
     reqbody = reqbody + '<?xml version="1.0" encoding="UTF-8"?>';

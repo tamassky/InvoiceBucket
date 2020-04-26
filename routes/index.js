@@ -12,6 +12,8 @@ router.get("/", function(req, res){
 	res.render("landing", {username: req.session.username});
 });
 
+
+
 //show registration page
 router.get("/register", function(req, res){
 	if(!req.session.username)
@@ -19,6 +21,8 @@ router.get("/register", function(req, res){
 	else
 		res.redirect('/');
 });
+
+
 
 //registration logic
 router.post("/register", function(req, res){
@@ -50,6 +54,8 @@ router.post("/register", function(req, res){
 	});
 });
 
+
+
 //show login page
 router.get("/login", function(req, res){
 	if(!req.session.username)
@@ -57,6 +63,8 @@ router.get("/login", function(req, res){
 	else
 		res.redirect('/');
 });
+
+
 
 //login logic
 router.post("/login", function(req, res){
@@ -83,6 +91,8 @@ router.get("/logout", function(req, res){
 	res.redirect('/');
 });
 
+
+
 //show technical data maintenance form
 router.get("/techdata", function(req, res){
 	if(req.session.username)
@@ -90,6 +100,8 @@ router.get("/techdata", function(req, res){
 	else
 		res.redirect('/login');
 });
+
+
 
 //save technical data
 router.post("/techdata", function(req, res){
@@ -155,6 +167,8 @@ router.post("/techdata", function(req, res){
     });
 });
 
+
+
 //show password maintenance form
 router.get("/pass", function(req, res){
 	if(req.session.username)
@@ -162,6 +176,8 @@ router.get("/pass", function(req, res){
 	else
 		res.redirect('/login');
 });
+
+
 
 //save new password
 router.post("/pass", function(req, res){
@@ -225,6 +241,8 @@ router.post("/pass", function(req, res){
     });
 });
 
+
+
 //view taxpayer info form
 router.get("/taxpayerdata", function(req, res){
 	if(req.session.username)
@@ -232,6 +250,8 @@ router.get("/taxpayerdata", function(req, res){
 	else
 		res.redirect('/login');	
 });
+
+
 
 //query taxpayer taxpayerdata
 router.post("/taxpayerdata", function(req, res){
@@ -315,6 +335,8 @@ router.post("/taxpayerdata", function(req, res){
     });
 });
 
+
+
 //view outbound invoice data form
 router.get("/arinvoicedata", function(req, res){
 	if(req.session.username)
@@ -322,6 +344,8 @@ router.get("/arinvoicedata", function(req, res){
 	else
 		res.redirect('/login');	
 });
+
+
 
 //query outbound invoice data
 router.post("/arinvoicedata", function(req, res){
@@ -410,6 +434,8 @@ router.post("/arinvoicedata", function(req, res){
     });
 });
 
+
+
 //view inbound invoice data form
 router.get("/apinvoicedata", function(req, res){
 	if(req.session.username)
@@ -417,6 +443,8 @@ router.get("/apinvoicedata", function(req, res){
 	else
 		res.redirect('/login');	
 });
+
+
 
 //query inbound invoice data
 router.post("/apinvoicedata", function(req, res){
@@ -504,5 +532,7 @@ router.post("/apinvoicedata", function(req, res){
 		});
     });
 });
+
+
 
 module.exports = router;

@@ -8,6 +8,9 @@ var express 			= require("express"),
 	flash				= require("connect-flash"),
 	
 	User 				= require("./models/user"),
+	Taxpayer 			= require("./models/taxpayer"),
+	Transaction 		= require("./models/transaction"),
+	Line 				= require("./models/line"),
 	
 	indexRoutes			= require("./routes/index"),
 	
