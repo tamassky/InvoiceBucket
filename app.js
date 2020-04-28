@@ -14,6 +14,8 @@ var express 			= require("express"),
 	
 	indexRoutes			= require("./routes/index"),
 	
+	seedDB				= require("./seeds");/**/
+	
 	port 				= process.env.PORT,
 	databaseurl			= process.env.DATABASEURL;
 
@@ -34,8 +36,10 @@ app.use(session({
     secret: 'numberplateIsDropTable*',
     resave: false,
     saveUninitialized: false,
+	rolling:true,
     cookie: {
-        expires: 1800000
+        expires: 1800000,
+		maxAge: 1800000
     }
 }));
 
@@ -48,6 +52,8 @@ app.use(function(req, res, next){
 });
 
 app.use("/", indexRoutes);
+
+seedDB(); /**/
 
 app.listen(port, function(){
 	console.log("InvoiceBucket server has started on port " + port + "!");

@@ -23,7 +23,7 @@ function buildBasicRequestType(requestId, user, indexHashExists, indexHash){
 	
 	var hashPassword 		= user.password.toUpperCase();
 	var date_now			= new Date();
-	var utctime 			= date_now.toISOString()
+	var utctime 			= date_now.toISOString();
 	var partial				= requestId + date_now.mask() + user.xmlsign;
 	console.log(partial);
 	if(indexHashExists)

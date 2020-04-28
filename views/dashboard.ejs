@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>InvoiceBucket</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="/stylesheets/main.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+				  	</button>
+					<a class="navbar-brand" href="/">InvoiceBucket | Hatósági adatszolgáltatás egyszerűen</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<% if(!username){ %>
+							<li>
+								<a href="/login">Bejelentkezés</a>
+							</li>
+							<li>
+								<a href="/register">Regisztráció</a>
+							</li>
+						<% } else { %>
+							<li>
+								<a href="#">Bejelentkezve mint <strong><%= username.substring(0, 30) %></strong></a>
+							</li>
+							<li>
+								<a href="/logout">Kijelentkezés</a>
+							</li>
+						<% } %>
+					</ul>
+				</div>
+			</div>
+			<% if(username){ %>
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-2" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-2">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="/dashboard">Tranzakciók</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Adatmódosítás<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/pass">Jelszó módosítása</a></li>
+								<li><a href="/techdata">Technikai felhasználó adatai</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Számla adatainak lekérdezése<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/arinvoicedata">Vevői számla</a></li>
+								<li><a href="/apinvoicedata">Szállítói számla</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="/taxpayerdata">Adózó adatainak lekérdezése</a>
+						</li>
+					</ul>
+				</div>
+			<% } %>
+		</nav>
+		
+		<div class="container text-center">
+			<% if(error && error.length > 0){ %>
+			<div class="alert alert-danger" role="alert">
+				<%= error %>
+			</div>	
+			<% } %>
+			<% if(success && success.length > 0){ %>
+			<div class="alert alert-success" role="alert">
+				<%= success %>
+			</div>	
+			<% } %>
+		</div>
+		
+		<div class="container">
+			<div class="jumbotron">
+				<h1 class="text-center">Tranzakciók</h1>
+				<br>
+				<h4 class="text-center">Az adatszolgáltatások a következő szervezet nevében fognak történni:</h4>
+				<h4 class="text-center"><%= organization %></h4>
+				<br>
+				<ul class="nav nav-pills">
+					<li role="presentation" class="active" class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Új<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Egyszerűsített számla</a></li>
+						</ul>
+					</li>
+				</ul>
+				<br>
+				<table class="table table-striped">
+					<tr>
+						<th>#</th>
+						<th>Tranzakció típusa</th>
+						<th>Számlaszám</th>
+						<th>Kapott azonosító</th>
+						<th>Állapot</th>
+						<th>Utolsó módosítás (UTC)</th>
+						<th>Törlés</th>
+					</tr>
+					<% owntransactions.forEach(function(owntransaction){ %>
+						<tr>
+							<td><a href="#"><%= owntransaction.number %></a></td>
+							<% if(owntransaction.invoiceOperation == 'CREATE' && owntransaction.invoiceCategory == 'SIMPLIFIED'){ %>
+								<td>Egyszerűsített számla</td>
+							<% } else{ %>
+								<td></td>
+							<% } %>
+							<td><%= owntransaction.invoiceNumber %></td>
+							<td><%= owntransaction.transactionId %></td>
+							<td><%= owntransaction.transactionStatus %></td>
+							<td><%= owntransaction.lastUpdateDate.toLocaleString('hu-HU') %></td>
+							<% if(owntransaction.transactionStatus == 'Piszkozat'){ %>
+								<td><a href="#">Törlés</a></td>
+							<% } else {%>
+								<td></td>
+							<% } %>
+						</tr>
+					<% }); %>
+				</table>
+			</div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	</body>
+</html>

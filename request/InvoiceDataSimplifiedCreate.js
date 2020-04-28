@@ -71,7 +71,7 @@ function buildInvoiceData(data){
 	invoicedata = invoicedata + '<invoiceLines>';
 	for(var i=0; i<data.lines.length; i++){
 		invoicedata = invoicedata + '<line>';
-		invoicedata = invoicedata + '<lineNumber>' + data.lines[i].lineNumber + '</lineNumber>';
+		invoicedata = invoicedata + '<lineNumber>' + (i+1).toString() + '</lineNumber>';
 		invoicedata = invoicedata + '<lineExpressionIndicator>true</lineExpressionIndicator>';
 		invoicedata = invoicedata + '<lineDescription>' + data.lines[i].lineDescription + '</lineDescription>';
 		invoicedata = invoicedata + '<quantity>' + data.lines[i].quantity + '</quantity>';
@@ -83,7 +83,7 @@ function buildInvoiceData(data){
 		invoicedata = invoicedata + '<unitPriceHUF>' + data.lines[i].unitPrice + '</unitPriceHUF>';
 		invoicedata = invoicedata + '<lineAmountsSimplified>';
 		invoicedata = invoicedata + '<lineVatContent>' + data.vatContent.toString() + '</lineVatContent>';
-		invoicedata = invoicedata + '<lineGrossAmountSimplified>' + data.lines[i].lineGrossAmountSimplified + '</lineGrossAmountSimplified>';cd sz
+		invoicedata = invoicedata + '<lineGrossAmountSimplified>' + data.lines[i].lineGrossAmountSimplified + '</lineGrossAmountSimplified>';
 		invoicedata = invoicedata + '<lineGrossAmountSimplifiedHUF>' + data.lines[i].lineGrossAmountSimplified + '</lineGrossAmountSimplifiedHUF>';
 		invoicedata = invoicedata + '</lineAmountsSimplified>';
 		invoicedata = invoicedata + '</line>';

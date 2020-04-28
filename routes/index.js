@@ -5,11 +5,15 @@ var sha512 		= require('js-sha512').sha512;
 var aes			= require('aes-ecb');
 var base64 		= require('js-base64').Base64;
 var User 		= require("../models/user");
+var Transaction	= require("../models/transaction");
 var apireq		= require("../request/request");
 
 //show landing page
 router.get("/", function(req, res){
-	res.render("landing", {username: req.session.username});
+	if(!req.session.username)
+		res.render("landing", {username: req.session.username});
+	else
+		res.redirect('/dashboard');
 });
 
 
@@ -19,7 +23,7 @@ router.get("/register", function(req, res){
 	if(!req.session.username)
 		res.render("register");
 	else
-		res.redirect('/');
+		res.redirect('/dashboard');
 });
 
 
@@ -61,7 +65,7 @@ router.get("/login", function(req, res){
 	if(!req.session.username)
 		res.render("login");
 	else
-		res.redirect('/');
+		res.redirect('/dashboard');
 });
 
 
@@ -80,9 +84,11 @@ router.post("/login", function(req, res){
         } 
         req.session.username = user.username;
         req.flash("success", "Sikeres bejelentkezés");
-		res.redirect('/');
+		res.redirect('/dashboard');
     });
 });
+
+
 
 //logout logic
 router.get("/logout", function(req, res){
@@ -93,10 +99,39 @@ router.get("/logout", function(req, res){
 
 
 
+//show dashboard
+router.get("/dashboard", function(req, res){
+	if(req.session.username){
+		User.findOne({username: req.session.username}, function(err, user) {
+			if(err){
+				console.log(err);
+				req.flash("error", err.message);
+				return res.redirect("/");
+			}
+			if(!user.navUsername){
+				req.flash("error", "Technikai felhasználó adatai hiányoznak!");
+				return res.redirect("/techdata");
+			}
+			Transaction.find({owner: req.session.username}, null, {sort: {number: -1}}, function(err, ownTransactions){
+				if(err){
+					console.log(err);
+				} else{
+					res.render("dashboard", {username: req.session.username, organization: user.taxpayerName, owntransactions: ownTransactions});
+				}
+			});
+    	});
+	}
+	else
+		res.redirect('/login');
+})
+
+
+
 //show technical data maintenance form
 router.get("/techdata", function(req, res){
-	if(req.session.username)
+	if(req.session.username){
 		res.render("techdata", {username: req.session.username});
+	}
 	else
 		res.redirect('/login');
 });
@@ -158,7 +193,7 @@ router.post("/techdata", function(req, res){
 							return res.redirect("/techdata");
 						}
 						req.flash("success", "Adatok mentése sikeres");
-						res.redirect('/');
+						res.redirect('/dashboard');
 					});
 				}
 			}
@@ -171,8 +206,9 @@ router.post("/techdata", function(req, res){
 
 //show password maintenance form
 router.get("/pass", function(req, res){
-	if(req.session.username)
+	if(req.session.username){
 		res.render("pass", {username: req.session.username});
+	}
 	else
 		res.redirect('/login');
 });
@@ -182,6 +218,7 @@ router.get("/pass", function(req, res){
 //save new password
 router.post("/pass", function(req, res){
 	var date_now	= new Date();
+	
 	
 	User.findOne({username: req.session.username, password: sha512(req.body.oldPass)}, function(err, user) {
 		if(err){
@@ -245,8 +282,20 @@ router.post("/pass", function(req, res){
 
 //view taxpayer info form
 router.get("/taxpayerdata", function(req, res){
-	if(req.session.username)
-		res.render("taxpayerdata", {username: req.session.username});
+	if(req.session.username){
+		User.findOne({username: req.session.username}, function(err, user) {
+			if(err){
+				console.log(err);
+				req.flash("error", err.message);
+				return res.redirect("/");
+			}
+			if(!user.navUsername){
+				req.flash("error", "Technikai felhasználó adatai hiányoznak!");
+				return res.redirect("/techdata");
+			}
+			res.render("taxpayerdata", {username: req.session.username, organization: user.taxpayerName});
+    	});
+	}
 	else
 		res.redirect('/login');	
 });
@@ -339,8 +388,20 @@ router.post("/taxpayerdata", function(req, res){
 
 //view outbound invoice data form
 router.get("/arinvoicedata", function(req, res){
-	if(req.session.username)
-		res.render("arinvoicedata", {username: req.session.username});
+	if(req.session.username){
+		User.findOne({username: req.session.username}, function(err, user) {
+			if(err){
+				console.log(err);
+				req.flash("error", err.message);
+				return res.redirect("/");
+			}
+			if(!user.navUsername){
+				req.flash("error", "Technikai felhasználó adatai hiányoznak!");
+				return res.redirect("/techdata");
+			}
+			res.render("arinvoicedata", {username: req.session.username, organization: user.taxpayerName});
+    	});
+	}
 	else
 		res.redirect('/login');	
 });
@@ -438,8 +499,20 @@ router.post("/arinvoicedata", function(req, res){
 
 //view inbound invoice data form
 router.get("/apinvoicedata", function(req, res){
-	if(req.session.username)
-		res.render("apinvoicedata", {username: req.session.username});
+	if(req.session.username){
+		User.findOne({username: req.session.username}, function(err, user) {
+			if(err){
+				console.log(err);
+				req.flash("error", err.message);
+				return res.redirect("/");
+			}
+			if(!user.navUsername){
+				req.flash("error", "Technikai felhasználó adatai hiányoznak!");
+				return res.redirect("/techdata");
+			}
+			res.render("apinvoicedata", {username: req.session.username, organization: user.taxpayerName});
+    	});
+	}
 	else
 		res.redirect('/login');	
 });

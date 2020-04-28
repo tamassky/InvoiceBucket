@@ -1,7 +1,6 @@
 var mongoose = require("mongoose");
 
 var lineSchema = new mongoose.Schema({
-	lineNumber: String,
 	lineDescription: String,
 	unitOfMeasure: String,
 	unitOfMeasureOwn: String,

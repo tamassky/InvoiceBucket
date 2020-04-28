@@ -1,12 +1,8 @@
 var mongoose = require("mongoose");
 
 var transactionSchema = new mongoose.Schema({
-	owner: {
-		id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User"
-		}
-	},
+	number: Number,
+	owner: String,
 	invoiceOperation: String,
 	invoiceNumber: String,
 	invoiceIssueDate: String,
@@ -44,7 +40,8 @@ var transactionSchema = new mongoose.Schema({
 	annulmentCode: String,
 	annulmentReason: String,
 	creationDate: Date,
-	lastUpdateDate: Date
+	lastUpdateDate: Date,
+	disabled: Boolean
 });
 
 module.exports = mongoose.model("Transaction", transactionSchema);
