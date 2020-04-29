@@ -8,6 +8,8 @@ var User 		= require("../models/user");
 var Transaction	= require("../models/transaction");
 var apireq		= require("../request/request");
 
+
+
 //show landing page
 router.get("/", function(req, res){
 	if(!req.session.username)
@@ -112,7 +114,7 @@ router.get("/dashboard", function(req, res){
 				req.flash("error", "Technikai felhasználó adatai hiányoznak!");
 				return res.redirect("/techdata");
 			}
-			Transaction.find({owner: req.session.username}, null, {sort: {number: -1}}, function(err, ownTransactions){
+			Transaction.find({owner: req.session.username, disabled: false}, null, {sort: {number: -1}}, function(err, ownTransactions){
 				if(err){
 					console.log(err);
 				} else{

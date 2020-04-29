@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>InvoiceBucket</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="/stylesheets/main.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+				  	</button>
+					<a class="navbar-brand" href="/">InvoiceBucket | Hatósági adatszolgáltatás egyszerűen</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<% if(!username){ %>
+							<li>
+								<a href="/login">Bejelentkezés</a>
+							</li>
+							<li>
+								<a href="/register">Regisztráció</a>
+							</li>
+						<% } else { %>
+							<li>
+								<a href="#">Bejelentkezve mint <strong><%= username.substring(0, 30) %></strong></a>
+							</li>
+							<li>
+								<a href="/logout">Kijelentkezés</a>
+							</li>
+						<% } %>
+					</ul>
+				</div>
+			</div>
+			<% if(username){ %>
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-2" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-2">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="/dashboard">Tranzakciók</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Adatmódosítás<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/pass">Jelszó módosítása</a></li>
+								<li><a href="/techdata">Technikai felhasználó adatai</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Számla adatainak lekérdezése<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/arinvoicedata">Vevői számla</a></li>
+								<li><a href="/apinvoicedata">Szállítói számla</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="/taxpayerdata">Adózó adatainak lekérdezése</a>
+						</li>
+					</ul>
+				</div>
+			<% } %>
+		</nav>
+		
+		<div class="container text-center">
+			<% if(error && error.length > 0){ %>
+			<div class="alert alert-danger" role="alert">
+				<%= error %>
+			</div>	
+			<% } %>
+			<% if(success && success.length > 0){ %>
+			<div class="alert alert-success" role="alert">
+				<%= success %>
+			</div>	
+			<% } %>
+		</div>
+		
+		<div class="container">
+			<div class="jumbotron text-center">
+		  		<h1>Számla alapadatai</h1>
+			</div>
+			<div class="row">
+				<div style="width: 30%; margin: 25px auto;">
+					<form action="/transaction/<%= transaction.number %>/basicdata" method="POST" id="basicdataCS">
+						<div class="form-group">
+							<label>Sorszám *</label>
+							<input class="form-control" type="text" name="invoiceNumber" value="<%= transaction.invoiceNumber %>">
+						</div>
+						<div class="form-group">
+							<label>Számla kelte *</label>
+							<input class="form-control" type="date" name="invoiceIssueDate" value="<%= transaction.invoiceIssueDate %>">
+						</div>
+						<div class="form-group">
+							<label>Teljesítés dátuma *</label>
+							<input class="form-control" type="date" name="invoiceDeliveryDate" value="<%= transaction.invoiceDeliveryDate %>">
+						</div>
+						<div class="form-group">
+							<label>Fizetési mód *</label>
+							<select class="form-control" name="paymentMethod">
+								<% if(!transaction.paymentMethod){ %>
+									<option value="" selected disabled>-Válassz-</option>
+								<% } else{ %>
+									<option value="" disabled>-Válassz-</option>
+								<% } %>
+								<% if(transaction.paymentMethod == 'TRANSFER'){ %>
+									<option value="TRANSFER" selected>Átutalás</option>
+								<% } else{ %>
+									<option value="TRANSFER">Átutalás</option>
+								<% } %>
+								<% if(transaction.paymentMethod == 'CASH'){ %>
+									<option value="CASH" selected>Készpénz</option>
+								<% } else{ %>
+									<option value="CASH">Készpénz</option>
+								<% } %>
+								<% if(transaction.paymentMethod == 'CARD'){ %>
+									<option value="CARD" selected>Bankkártya</option>
+								<% } else{ %>
+									<option value="CARD">Bankkártya</option>
+								<% } %>
+								<% if(transaction.paymentMethod == 'VOUCHER'){ %>
+									<option value="VOUCHER" selected>Utalvány</option>
+								<% } else{ %>
+									<option value="VOUCHER">Utalvány</option>
+								<% } %>
+								<% if(transaction.paymentMethod == 'OTHER'){ %>
+									<option value="OTHER" selected>Egyéb</option>
+								<% } else{ %>
+									<option value="OTHER">Egyéb</option>
+								<% } %>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Megjelenési forma *</label>
+							<select class="form-control" name="invoiceAppearance">
+								<% if(!transaction.invoiceAppearance){ %>
+									<option value="" selected disabled>-Válassz-</option>
+								<% } else{ %>
+									<option value="" disabled>-Válassz-</option>
+								<% } %>
+								<% if(transaction.invoiceAppearance == 'PAPER'){ %>
+									<option value="PAPER" selected>Papír alapú számla</option>
+								<% } else{ %>
+									<option value="PAPER">Papír alapú számla</option>
+								<% } %>
+								<% if(transaction.invoiceAppearance == 'ELECTRONIC'){ %>
+									<option value="ELECTRONIC" selected>Elektronikus, nem EDI számla</option>
+								<% } else{ %>
+									<option value="ELECTRONIC">Elektronikus, nem EDI számla</option>
+								<% } %>
+								<% if(transaction.invoiceAppearance == 'EDI'){ %>
+									<option value="EDI" selected>Elektronikus, EDI számla</option>
+								<% } else{ %>
+									<option value="EDI">Elektronikus, EDI számla</option>
+								<% } %>
+								<% if(transaction.invoiceAppearance == 'UNKNOWN'){ %>
+									<option value="UNKNOWN" selected>Ismeretlen</option>
+								<% } else{ %>
+									<option value="UNKNOWN">Ismeretlen</option>
+								<% } %>
+							</select>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Mentés</button>
+					  	</div>
+					</form>
+					
+				</div>
+			</div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#basicdataCS').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					invoiceNumber: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					invoiceIssueDate: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					invoiceDeliveryDate: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					paymentMethod: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					invoiceAppearance: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					}
+				}
+			});
+		</script>
+	
+	</body>
+</html>

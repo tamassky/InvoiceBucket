@@ -87,56 +87,87 @@
 		</div>
 		
 		<div class="container">
-			<div class="jumbotron">
-				<h1 class="text-center">Tranzakciók</h1>
-				<br>
-				<h4 class="text-center">Az adatszolgáltatások a következő szervezet nevében fognak történni:</h4>
-				<h4 class="text-center"><%= organization %></h4>
-				<br>
-				<ul class="nav nav-pills">
-					<li role="presentation" class="active" class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Új<span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="/transaction/new/CS">Egyszerűsített számla</a></li>
-						</ul>
-					</li>
-				</ul>
-				<br>
-				<table class="table table-hover">
-					<tr>
-						<th>#</th>
-						<th>Tranzakció típusa</th>
-						<th>Számlaszám</th>
-						<th>Kapott azonosító</th>
-						<th>Állapot</th>
-						<th>Utolsó módosítás (UTC)</th>
-						<th>Törlés</th>
-					</tr>
-					<% owntransactions.forEach(function(owntransaction){ %>
-						<tr>
-							<td><a href="/transaction/<%= owntransaction.number %>"><%= owntransaction.number %></a></td>
-							<% if(owntransaction.invoiceOperation == 'CREATE' && owntransaction.invoiceCategory == 'SIMPLIFIED'){ %>
-								<td>Egyszerűsített számla</td>
-							<% } else{ %>
-								<td></td>
-							<% } %>
-							<td><%= owntransaction.invoiceNumber %></td>
-							<td><%= owntransaction.transactionId %></td>
-							<td><%= owntransaction.transactionStatus %></td>
-							<td><%= owntransaction.lastUpdateDate.toLocaleString('hu-HU') %></td>
-							<% if(owntransaction.transactionStatus == 'Piszkozat'){ %>
-								<td><a style="color:red" class="glyphicon glyphicon-trash" href="/transaction/<%= owntransaction.number %>/delete"></a></td>
-							<% } else {%>
-								<td></td>
-							<% } %>
-						</tr>
-					<% }); %>
-				</table>
+			<div class="jumbotron text-center">
+		  		<h1>Összegző adatok</h1>
+			</div>
+			<div class="row">
+				<div style="width: 30%; margin: 25px auto;">
+					<form action="/transaction/<%= transaction.number %>/summary" method="POST" id="summaryCS">
+						<div class="form-group">
+							<label>Áfatartalom *</label>
+							<select class="form-control" name="vatContent">
+								<% if(!transaction.vatContent){ %>
+									<option value="" selected disabled>-Válassz-</option>
+								<% } else{ %>
+									<option value="" disabled>-Válassz-</option>
+								<% } %>
+								<% if(transaction.vatContent == '0.2126'){ %>
+									<option value="0.2126" selected>21.26%</option>
+								<% } else{ %>
+									<option value="0.2126">21.26%</option>
+								<% } %>
+								<% if(transaction.vatContent == '0.1525'){ %>
+									<option value="0.1525" selected>15.25%</option>
+								<% } else{ %>
+									<option value="0.1525">15.25%</option>
+								<% } %>
+								<% if(transaction.vatContent == '0.0476'){ %>
+									<option value="0.0476" selected>4.76%</option>
+								<% } else{ %>
+									<option value="0.0476">4.76%</option>
+								<% } %>
+								<% if(transaction.vatContent == '0'){ %>
+									<option value="0" selected>Áfamentes</option>
+								<% } else{ %>
+									<option value="0">Áfamentes</option>
+								<% } %>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Fizetendő *</label>
+							<input class="form-control" type="text" name="invoiceGrossAmount" value="<%= transaction.invoiceGrossAmount %>">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Mentés</button>
+					  	</div>
+					</form>
+					
+				</div>
 			</div>
 		</div>
 		
 		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#summaryCS').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					vatContent: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					invoiceGrossAmount: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^[0-9]{1,18}$/,
+								message: 'Helytelen formátum'
+							}
+						}
+					}
+				}
+			});
+		</script>
 	
 	</body>
 </html>

@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 
 var transactionSchema = new mongoose.Schema({
-	number: Number,
+	number: {type: Number, unique: true},
 	owner: String,
 	invoiceOperation: String,
 	invoiceNumber: String,
