@@ -8,12 +8,12 @@ var express 			= require("express"),
 	flash				= require("connect-flash"),
 	
 	User 				= require("./models/user"),
-	Taxpayer 			= require("./models/taxpayer"),
 	Transaction 		= require("./models/transaction"),
 	Line 				= require("./models/line"),
 	
 	indexRoutes			= require("./routes/index"),
 	transactionRoutes	= require("./routes/transaction"),
+	lineRoutes			= require("./routes/line"),
 	
 	seedDB				= require("./seeds"),/**/
 	
@@ -54,6 +54,7 @@ app.use(function(req, res, next){
 
 app.use("/", indexRoutes);
 app.use("/transaction", transactionRoutes);
+app.use("/transaction/:number/line", lineRoutes);
 
 /*seedDB(); */
 

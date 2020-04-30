@@ -147,7 +147,7 @@
 				<h2 class="text-left">
 					<strong>Számlakibocsátó adatai</strong>
 					<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-						<a class="glyphicon glyphicon-pencil" href="#"></a>
+						<a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/supplier"></a>
 					<% } %>
 				</h2>
 				<table class="table table-hover">
@@ -161,7 +161,7 @@
 				<h2 class="text-left">
 					<strong>Vevő adatai</strong>
 					<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-						<a class="glyphicon glyphicon-pencil" href="#"></a>
+						<a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/customer"></a>
 					<% } %>
 				</h2>
 				<table class="table table-hover">
@@ -175,7 +175,7 @@
 				<h2 class="text-left">
 					<strong>Sorok</strong>
 					<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-						<a style="color:green" class="glyphicon glyphicon-plus" href="#"></a>
+						<a style="color:green" class="glyphicon glyphicon-plus" href="/transaction/<%= transaction.number %>/line/new"></a>
 					<% } %>
 				</h2>
 				<table class="table table-hover">
@@ -185,7 +185,7 @@
 						<% } %>
 						<th>Tétel megnevezése</th>
 						<th>Mértékegység</th>
-						<th>Egyedi mértékegység</th>
+						<th>Egyéni mértékegység</th>
 						<th>Mennyiség</th>
 						<th>Egységár</th>
 						<th>Érték</th>
@@ -199,7 +199,58 @@
 								<td><a class="glyphicon glyphicon-pencil" href="#"></a></td>
 							<% } %>
 							<td><%= lines.lineDescription %></td>
-							<td><%= lines.unitOfMeasure %></td>
+							<% switch(lines.unitOfMeasure){
+								case 'PIECE': %>
+									<td>Darab</td>
+									<% break; %>
+								<% case 'KILOGRAM': %>
+									<td>Kilogramm</td>
+									<% break; %>
+								<% case 'TON': %>
+									<td>Tonna</td>
+									<% break; %>
+								<% case 'KWH': %>
+									<td>Kilowattóra</td>
+									<% break; %>
+								<% case 'DAY': %>
+									<td>Nap</td>
+									<% break; %>
+								<% case 'HOUR': %>
+									<td>Óra</td>
+									<% break; %>
+								<% case 'MINUTE': %>
+									<td>Perc</td>
+									<% break; %>
+								<% case 'MONTH': %>
+									<td>Hónap</td>
+									<% break; %>
+								<% case 'LITER': %>
+									<td>Liter</td>
+									<% break; %>
+								<% case 'KILOMETER': %>
+									<td>Kilométer</td>
+									<% break; %>
+								<% case 'CUBIC_METER': %>
+									<td>Köbméter</td>
+									<% break; %>
+								<% case 'METER': %>
+									<td>Méter</td>
+									<% break; %>
+								<% case 'LINEAR_METER': %>
+									<td>Folyóméter</td>
+									<% break; %>
+								<% case 'CARTON': %>
+									<td>Karton</td>
+									<% break; %>
+								<% case 'PACK': %>
+									<td>Csomag</td>
+									<% break; %>
+								<% case 'OWN': %>
+									<td>Egyéni</td>
+									<% break; %>
+								<% default: %>
+									<td></td>	
+							<% } %>
 							<td><%= lines.unitOfMeasureOwn %></td>
 							<td><%= lines.quantity %></td>
 							<td><%= lines.unitPrice %></td>

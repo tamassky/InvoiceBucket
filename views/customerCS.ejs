@@ -80,95 +80,50 @@
 			</div>	
 			<% } %>
 			<% if(success && success.length > 0){ %>
-			<div class="alert alert-success" role="alert">
-				<%= success %>
-			</div>	
+			<div class="alert alert-success">
+				<% if(success.length === 1) { %>
+				   <%= success %>
+				<% } else { %>
+					<ul style="list-style-type:none;">
+						<% success.forEach(function(suc) { %>
+							<li> <%= suc %> </li>
+						<% }) %>
+					</ul>
+				<% } %> 
+			</div>
 			<% } %>
 		</div>
 		
 		<div class="container">
 			<div class="jumbotron text-center">
-		  		<h1>Számla alapadatai</h1>
+		  		<h1>Vevő adatai</h1>
 			</div>
 			<div class="row">
 				<div style="width: 30%; margin: 25px auto;">
-					<form action="/transaction/<%= transaction.number %>/basicdata" method="POST" id="basicdataCS">
+					<form action="/transaction/<%= transaction.number %>/customer" method="POST" id="customerCS">
 						<div class="form-group">
-							<label>Sorszám *</label>
-							<input class="form-control" type="text" name="invoiceNumber" value="<%= transaction.invoiceNumber %>">
+							<label>Adószám</label>
+							<% if(transaction.customerTaxpayerId + transaction.customerVatCode + transaction.customerCountyCode == 0) {%>
+							<input class="form-control" type="text" name="customerTaxNumber" value="">
+							<% } else{ %>
+							<input class="form-control" type="text" name="customerTaxNumber" value="<%= transaction.customerTaxpayerId + transaction.customerVatCode + transaction.customerCountyCode %>">
+							<% } %>
 						</div>
 						<div class="form-group">
-							<label>Számla kelte *</label>
-							<input class="form-control" type="date" name="invoiceIssueDate" value="<%= transaction.invoiceIssueDate %>">
+							<label>Név *</label>
+							<input class="form-control" type="text" name="customerName" value="<%= transaction.customerName %>">
 						</div>
 						<div class="form-group">
-							<label>Teljesítés dátuma *</label>
-							<input class="form-control" type="date" name="invoiceDeliveryDate" value="<%= transaction.invoiceDeliveryDate %>">
+							<label>Irányítószám *</label>
+							<input class="form-control" type="text" name="customerPostalCode" value="<%= transaction.customerPostalCode %>">
 						</div>
 						<div class="form-group">
-							<label>Fizetési mód *</label>
-							<select class="form-control" name="paymentMethod">
-								<% if(!transaction.paymentMethod){ %>
-									<option value="" selected disabled>-Válassz-</option>
-								<% } else{ %>
-									<option value="" disabled>-Válassz-</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'TRANSFER'){ %>
-									<option value="TRANSFER" selected>Átutalás</option>
-								<% } else{ %>
-									<option value="TRANSFER">Átutalás</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'CASH'){ %>
-									<option value="CASH" selected>Készpénz</option>
-								<% } else{ %>
-									<option value="CASH">Készpénz</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'CARD'){ %>
-									<option value="CARD" selected>Bankkártya</option>
-								<% } else{ %>
-									<option value="CARD">Bankkártya</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'VOUCHER'){ %>
-									<option value="VOUCHER" selected>Utalvány</option>
-								<% } else{ %>
-									<option value="VOUCHER">Utalvány</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'OTHER'){ %>
-									<option value="OTHER" selected>Egyéb</option>
-								<% } else{ %>
-									<option value="OTHER">Egyéb</option>
-								<% } %>
-							</select>
+							<label>Település *</label>
+							<input class="form-control" type="text" name="customerCity" value="<%= transaction.customerCity %>">
 						</div>
 						<div class="form-group">
-							<label>Megjelenési forma *</label>
-							<select class="form-control" name="invoiceAppearance">
-								<% if(!transaction.invoiceAppearance){ %>
-									<option value="" selected disabled>-Válassz-</option>
-								<% } else{ %>
-									<option value="" disabled>-Válassz-</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'PAPER'){ %>
-									<option value="PAPER" selected>Papír alapú számla</option>
-								<% } else{ %>
-									<option value="PAPER">Papír alapú számla</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'ELECTRONIC'){ %>
-									<option value="ELECTRONIC" selected>Elektronikus, nem EDI számla</option>
-								<% } else{ %>
-									<option value="ELECTRONIC">Elektronikus, nem EDI számla</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'EDI'){ %>
-									<option value="EDI" selected>Elektronikus, EDI számla</option>
-								<% } else{ %>
-									<option value="EDI">Elektronikus, EDI számla</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'UNKNOWN'){ %>
-									<option value="UNKNOWN" selected>Ismeretlen</option>
-								<% } else{ %>
-									<option value="UNKNOWN">Ismeretlen</option>
-								<% } %>
-							</select>
+							<label>További címadatok *</label>
+							<input class="form-control" type="text" name="customerAdditionalAddressDetail" value="<%= transaction.customerAdditionalAddressDetail %>">
 						</div>
 						<div class="form-group">
 							<button type="submit" class="btn btn-success">Mentés</button>
@@ -184,42 +139,47 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
 		<script type='text/javascript'>
-			$('#basicdataCS').bootstrapValidator({
+			$('#customerCS').bootstrapValidator({
 				feedbackIcons: {
 					valid: 'glyphicon glyphicon-ok',
 					invalid: 'glyphicon glyphicon-remove',
 					validating: 'glyphicon glyphicon-refresh'
 				},
 				fields: {
-					invoiceNumber: {
+					customerTaxNumber: {
+						validators: {
+							regexp: {
+								regexp: /^[0-9]{8}[1-5]{1}[0-9]{2}$/,
+								message: 'Érvénytelen formátum'
+                    		}
+						}
+					},
+					customerName: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
 							}
 						}
 					},
-					invoiceIssueDate: {
+					customerPostalCode: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							regexp: {
+								regexp: /^[A-Z0-9][A-Z0-9\s\-]{1,8}[A-Z0-9]$/,
+								message: 'Érvénytelen formátum'
+							}
+						},
+					},
+					customerCity: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
 							}
 						}
 					},
-					invoiceDeliveryDate: {
-						validators: {
-							notEmpty: {
-								message: 'Kötelező mező'
-							}
-						}
-					},
-					paymentMethod: {
-						validators: {
-							notEmpty: {
-								message: 'Kötelező mező'
-							}
-						}
-					},
-					invoiceAppearance: {
+					customerAdditionalAddressDetail: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'

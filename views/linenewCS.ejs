@@ -88,87 +88,52 @@
 		
 		<div class="container">
 			<div class="jumbotron text-center">
-		  		<h1>Számla alapadatai</h1>
+		  		<h1>Új sor a #<%= transaction.number %> tranzakcióhoz</h1>
 			</div>
 			<div class="row">
 				<div style="width: 30%; margin: 25px auto;">
-					<form action="/transaction/<%= transaction.number %>/basicdata" method="POST" id="basicdataCS">
+					<form action="/transaction/<%= transaction.number %>/line/" method="POST" id="linenewCS">
 						<div class="form-group">
-							<label>Sorszám *</label>
-							<input class="form-control" type="text" name="invoiceNumber" value="<%= transaction.invoiceNumber %>">
+							<label>Tétel megnevezése *</label>
+							<input class="form-control" type="text" name="lineDescription">
 						</div>
 						<div class="form-group">
-							<label>Számla kelte *</label>
-							<input class="form-control" type="date" name="invoiceIssueDate" value="<%= transaction.invoiceIssueDate %>">
-						</div>
-						<div class="form-group">
-							<label>Teljesítés dátuma *</label>
-							<input class="form-control" type="date" name="invoiceDeliveryDate" value="<%= transaction.invoiceDeliveryDate %>">
-						</div>
-						<div class="form-group">
-							<label>Fizetési mód *</label>
-							<select class="form-control" name="paymentMethod">
-								<% if(!transaction.paymentMethod){ %>
-									<option value="" selected disabled>-Válassz-</option>
-								<% } else{ %>
-									<option value="" disabled>-Válassz-</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'TRANSFER'){ %>
-									<option value="TRANSFER" selected>Átutalás</option>
-								<% } else{ %>
-									<option value="TRANSFER">Átutalás</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'CASH'){ %>
-									<option value="CASH" selected>Készpénz</option>
-								<% } else{ %>
-									<option value="CASH">Készpénz</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'CARD'){ %>
-									<option value="CARD" selected>Bankkártya</option>
-								<% } else{ %>
-									<option value="CARD">Bankkártya</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'VOUCHER'){ %>
-									<option value="VOUCHER" selected>Utalvány</option>
-								<% } else{ %>
-									<option value="VOUCHER">Utalvány</option>
-								<% } %>
-								<% if(transaction.paymentMethod == 'OTHER'){ %>
-									<option value="OTHER" selected>Egyéb</option>
-								<% } else{ %>
-									<option value="OTHER">Egyéb</option>
-								<% } %>
+							<label>Mértékegység *</label>
+							<select class="form-control" name="unitOfMeasure">
+								<option value="" selected disabled>-Válassz-</option>
+								<option value="PIECE">Darab</option>
+								<option value="KILOGRAM">Kilogramm</option>
+								<option value="TON">Tonna</option>
+								<option value="KWH">Kilowattóra</option>
+								<option value="DAY">Nap</option>
+								<option value="HOUR">Óra</option>
+								<option value="MINUTE">Perc</option>
+								<option value="MONTH">Hónap</option>
+								<option value="LITER">Liter</option>
+								<option value="KILOMETER">Kilométer</option>
+								<option value="CUBIC_METER">Köbméter</option>
+								<option value="METER">Méter</option>
+								<option value="LINEAR_METER">Folyóméter</option>
+								<option value="CARTON">Karton</option>
+								<option value="PACK">Csomag</option>
+								<option value="OWN">Egyéni</option>
 							</select>
 						</div>
 						<div class="form-group">
-							<label>Megjelenési forma *</label>
-							<select class="form-control" name="invoiceAppearance">
-								<% if(!transaction.invoiceAppearance){ %>
-									<option value="" selected disabled>-Válassz-</option>
-								<% } else{ %>
-									<option value="" disabled>-Válassz-</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'PAPER'){ %>
-									<option value="PAPER" selected>Papír alapú számla</option>
-								<% } else{ %>
-									<option value="PAPER">Papír alapú számla</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'ELECTRONIC'){ %>
-									<option value="ELECTRONIC" selected>Elektronikus, nem EDI számla</option>
-								<% } else{ %>
-									<option value="ELECTRONIC">Elektronikus, nem EDI számla</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'EDI'){ %>
-									<option value="EDI" selected>Elektronikus, EDI számla</option>
-								<% } else{ %>
-									<option value="EDI">Elektronikus, EDI számla</option>
-								<% } %>
-								<% if(transaction.invoiceAppearance == 'UNKNOWN'){ %>
-									<option value="UNKNOWN" selected>Ismeretlen</option>
-								<% } else{ %>
-									<option value="UNKNOWN">Ismeretlen</option>
-								<% } %>
-							</select>
+							<label>Egyéni mértékegység megnevezése</label>
+							<input class="form-control" type="text" name="unitOfMeasureOwn">
+						</div>
+						<div class="form-group">
+							<label>Mennyiség *</label>
+							<input class="form-control" type="text" name="quantity">
+						</div>
+						<div class="form-group">
+							<label>Egységár *</label>
+							<input class="form-control" type="text" name="unitPrice">
+						</div>
+						<div class="form-group">
+							<label>Érték *</label>
+							<input class="form-control" type="text" name="lineGrossAmountSimplified">
 						</div>
 						<div class="form-group">
 							<button type="submit" class="btn btn-success">Mentés</button>
@@ -179,56 +144,66 @@
 				</div>
 			</div>
 		</div>
-		
 		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
 		<script type='text/javascript'>
-			$('#basicdataCS').bootstrapValidator({
+			$('#linenewCS').bootstrapValidator({
 				feedbackIcons: {
 					valid: 'glyphicon glyphicon-ok',
 					invalid: 'glyphicon glyphicon-remove',
 					validating: 'glyphicon glyphicon-refresh'
 				},
 				fields: {
-					invoiceNumber: {
+					lineDescription: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
 							}
 						}
 					},
-					invoiceIssueDate: {
+					unitOfMeasure: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
 							}
 						}
 					},
-					invoiceDeliveryDate: {
+					quantity: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^-?[0-9]{1,22}$/,
+								message: 'Helytelen formátum'
 							}
 						}
 					},
-					paymentMethod: {
+					unitPrice: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^-?[0-9]{1,22}$/,
+								message: 'Helytelen formátum'
 							}
 						}
 					},
-					invoiceAppearance: {
+					lineGrossAmountSimplified: {
 						validators: {
 							notEmpty: {
 								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^-?[0-9]{1,18}$/,
+								message: 'Helytelen formátum'
 							}
 						}
 					}
 				}
 			});
 		</script>
-	
 	</body>
 </html>
