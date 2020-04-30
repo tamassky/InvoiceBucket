@@ -6,6 +6,7 @@ var express 			= require("express"),
 	session 			= require('express-session'),
 	mongoose 			= require("mongoose"),
 	flash				= require("connect-flash"),
+	methodOverride  	= require("method-override"),
 	
 	User 				= require("./models/user"),
 	Transaction 		= require("./models/transaction"),
@@ -45,6 +46,8 @@ app.use(session({
 }));
 
 app.use(flash());
+
+app.use(methodOverride("_method"));
 
 app.use(function(req, res, next){
 	res.locals.error = req.flash("error");

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>InvoiceBucket</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="/stylesheets/main.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+				  	</button>
+					<a class="navbar-brand" href="/">InvoiceBucket | Hatósági adatszolgáltatás egyszerűen</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<% if(!username){ %>
+							<li>
+								<a href="/login">Bejelentkezés</a>
+							</li>
+							<li>
+								<a href="/register">Regisztráció</a>
+							</li>
+						<% } else { %>
+							<li>
+								<a href="#">Bejelentkezve mint <strong><%= username.substring(0, 30) %></strong></a>
+							</li>
+							<li>
+								<a href="/logout">Kijelentkezés</a>
+							</li>
+						<% } %>
+					</ul>
+				</div>
+			</div>
+			<% if(username){ %>
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-main-navbar-collapse-2" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-main-navbar-collapse-2">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="/dashboard">Tranzakciók</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Adatmódosítás<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/pass">Jelszó módosítása</a></li>
+								<li><a href="/techdata">Technikai felhasználó adatai</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Számla adatainak lekérdezése<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="/arinvoicedata">Vevői számla</a></li>
+								<li><a href="/apinvoicedata">Szállítói számla</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="/taxpayerdata">Adózó adatainak lekérdezése</a>
+						</li>
+					</ul>
+				</div>
+			<% } %>
+		</nav>
+		
+		<div class="container text-center">
+			<% if(error && error.length > 0){ %>
+			<div class="alert alert-danger" role="alert">
+				<%= error %>
+			</div>	
+			<% } %>
+			<% if(success && success.length > 0){ %>
+			<div class="alert alert-success" role="alert">
+				<%= success %>
+			</div>	
+			<% } %>
+		</div>
+		
+		<div class="container">
+			<div class="jumbotron text-center">
+		  		<h1>Sor szerkesztése</h1>
+			</div>
+			<div class="row">
+				<div style="width: 30%; margin: 25px auto;">
+					<form action="/transaction/<%= transaction.number %>/line/<%= line._id %>?_method=PUT" method="POST" id="linenewCS">
+						<div class="form-group">
+							<label>Tétel megnevezése *</label>
+							<input class="form-control" type="text" name="lineDescription" value="<%= line.lineDescription %>">
+						</div>
+						<div class="form-group">
+							<label>Mértékegység *</label>
+							<select class="form-control" name="unitOfMeasure">
+								<% if(!line.unitOfMeasure){ %>
+									<option value="" selected disabled>-Válassz-</option>
+								<% } else{ %>
+									<option value="" disabled>-Válassz-</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'PIECE'){ %>
+									<option value="PIECE" selected>Darab</option>
+								<% } else{ %>
+									<option value="PIECE">Darab</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'KILOGRAM'){ %>
+									<option value="KILOGRAM" selected>Kilogramm</option>
+								<% } else{ %>
+									<option value="KILOGRAM">Kilogramm</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'TON'){ %>
+									<option value="TON" selected>Tonna</option>
+								<% } else{ %>
+									<option value="TON">Tonna</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'KWH'){ %>
+									<option value="KWH" selected>Kilowattóra</option>
+								<% } else{ %>
+									<option value="KWH">Kilowattóra</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'DAY'){ %>
+									<option value="DAY" selected>Nap</option>
+								<% } else{ %>
+									<option value="DAY">Nap</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'HOUR'){ %>
+									<option value="HOUR" selected>Óra</option>
+								<% } else{ %>
+									<option value="HOUR">Óra</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'MINUTE'){ %>
+									<option value="MINUTE" selected>Perc</option>
+								<% } else{ %>
+									<option value="MINUTE">Perc</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'MONTH'){ %>
+									<option value="MONTH" selected>Hónap</option>
+								<% } else{ %>
+									<option value="MONTH">Hónap</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'LITER'){ %>
+									<option value="LITER" selected>Liter</option>
+								<% } else{ %>
+									<option value="LITER">Liter</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'KILOMETER'){ %>
+									<option value="KILOMETER" selected>Kilométer</option>
+								<% } else{ %>
+									<option value="KILOMETER">Kilométer</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'CUBIC_METER'){ %>
+									<option value="CUBIC_METER" selected>Köbméter</option>
+								<% } else{ %>
+									<option value="CUBIC_METER">Köbméter</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'METER'){ %>
+									<option value="METER" selected>Méter</option>
+								<% } else{ %>
+									<option value="METER">Méter</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'LINEAR_METER'){ %>
+									<option value="LINEAR_METER" selected>Folyóméter</option>
+								<% } else{ %>
+									<option value="LINEAR_METER">Folyóméter</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'CARTON'){ %>
+									<option value="CARTON" selected>Karton</option>
+								<% } else{ %>
+									<option value="CARTON">Karton</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'PACK'){ %>
+									<option value="PACK" selected>Csomag</option>
+								<% } else{ %>
+									<option value="PACK">Csomag</option>
+								<% } %>
+								<% if(line.unitOfMeasure == 'OWN'){ %>
+									<option value="OWN" selected>Egyéni</option>
+								<% } else{ %>
+									<option value="OWN">Egyéni</option>
+								<% } %>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Egyéni mértékegység megnevezése</label>
+							<input class="form-control" type="text" name="unitOfMeasureOwn" value="<%= line.unitOfMeasureOwn %>">
+						</div>
+						<div class="form-group">
+							<label>Mennyiség *</label>
+							<input class="form-control" type="text" name="quantity" value="<%= line.quantity %>">
+						</div>
+						<div class="form-group">
+							<label>Egységár *</label>
+							<input class="form-control" type="text" name="unitPrice" value="<%= line.unitPrice %>">
+						</div>
+						<div class="form-group">
+							<label>Érték *</label>
+							<input class="form-control" type="text" name="lineGrossAmountSimplified" value="<%= line.lineGrossAmountSimplified %>">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Mentés</button>
+							<a href="/transaction/<%= transaction.number %>" class="btn btn-primary" allign="right">Vissza</a>
+					  	</div>
+					</form>
+					
+				</div>
+			</div>
+		</div>
+		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#linenewCS').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					lineDescription: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					unitOfMeasure: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					quantity: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^-?[0-9]{1,22}$/,
+								message: 'Helytelen formátum'
+							}
+						}
+					},
+					unitPrice: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^-?[0-9]{1,22}$/,
+								message: 'Helytelen formátum'
+							}
+						}
+					},
+					lineGrossAmountSimplified: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							},
+							regexp: {	
+								regexp: /^-?[0-9]{1,18}$/,
+								message: 'Helytelen formátum'
+							}
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

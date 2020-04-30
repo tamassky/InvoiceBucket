@@ -196,7 +196,7 @@
 					<% transaction.lines.forEach(function(lines){ %>
 						<tr>
 							<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-								<td><a class="glyphicon glyphicon-pencil" href="#"></a></td>
+								<td><a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/line/<%= lines._id %>/edit"></a></td>
 							<% } %>
 							<td><%= lines.lineDescription %></td>
 							<% switch(lines.unitOfMeasure){
@@ -256,7 +256,12 @@
 							<td><%= lines.unitPrice %></td>
 							<td><%= lines.lineGrossAmountSimplified %></td>
 							<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-								<td><a style="color:red" class="glyphicon glyphicon-trash" href="#"></a></td>
+								<td>
+								<!--	<a style="color:red" class="glyphicon glyphicon-trash" href="/transaction/<%= transaction.number %>/line/<%= lines._id %>?_method=DELETE"></a> -->
+									<form id="delete-line" action="/transaction/<%= transaction.number %>/line/<%= lines._id %>?_method=DELETE" method="POST">
+										<a class="glyphicon glyphicon-trash" href="#0" onclick="document.getElementById('delete-line').submit();" style="color:red"></a>
+									</form>
+								</td>
 							<% } %>
 						</tr>
 					<% }); %>
