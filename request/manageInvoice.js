@@ -1,6 +1,6 @@
-var BasicRequestType 	= require("./BasicRequestType");
-var InvoiceData 		= require("./InvoiceDataSimplifiedCreate");
-var sha3_512 			= require('js-sha3').sha3_512;
+var BasicRequestType 			= require("./BasicRequestType");
+var InvoiceDataSimplifiedCreate = require("./InvoiceDataSimplifiedCreate");
+var sha3_512 					= require('js-sha3').sha3_512;
 
 function buildManageInvoice(requestId, user, data, token) {
 

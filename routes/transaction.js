@@ -1,6 +1,8 @@
 var express		= require("express");
 var router		= express.Router();
-/*var User 		= require("../models/user");*/
+var sha512 		= require('js-sha512').sha512;
+var aes			= require('aes-ecb');
+var User 		= require("../models/user");
 var Transaction	= require("../models/transaction");
 var middleware  = require("../middleware");
 var apireq		= require("../request/request");
@@ -42,9 +44,8 @@ router.get("/new/CS", function(req, res){
 									invoiceGrossAmount: null,
 									transactionId: null,
 									transactionStatus: 'Piszkozat',
-									transactionResponse: null,
-									transactionMessage: null,
-									annuled: null,
+									transactionValidation: [],
+									annuled: false,
 									annulmentCode: null,
 									annulmentReason: null,
 									creationDate: date_now,
@@ -327,6 +328,120 @@ router.post("/:number/summary", middleware.checkTransactionOwnership, function(r
 	});
 });
 
+
+
+//sign transaction
+router.post("/:number/sign", middleware.checkTransactionOwnership, function(req, res){
+	var date_now = new Date();
+	Transaction.findOne({number: req.params.number}).populate("lines").exec(function(err, foundTransaction){
+		if(err){
+			req.flash("error", err);
+			res.redirect("/dashboard");
+			console.log(err);
+		} else{
+			if(foundTransaction.disabled || foundTransaction.transactionStatus != 'Piszkozat'){
+				req.flash("error", "A tranzakció már alá lett írva vagy törölték");
+				res.redirect("/dashboard");
+			}
+			else{
+				/*Validators*/
+				if(!foundTransaction.invoiceNumber){
+					req.flash("error", "Számla alapadatai hiányoznak!");
+					return res.redirect('/transaction/' + req.params.number);
+				}
+				if(!foundTransaction.supplierName){
+					req.flash("error", "Számlakibocsátó adatai hiányoznak!");
+					return res.redirect('/transaction/' + req.params.number);
+				}
+				if(!foundTransaction.customerName){
+					req.flash("error", "Vevő adatai hiányoznak!");
+					return res.redirect('/transaction/' + req.params.number);
+				}
+				if(foundTransaction.lines.length == 0){
+					req.flash("error", "Legalább egy sor felvétele szükséges!");
+					return res.redirect('/transaction/' + req.params.number);
+				}
+				var invalidLine = false;
+				foundTransaction.lines.forEach(function(line){
+					if(line.unitOfMeasure == 'OWN' && line.unitOfMeasureOwn == '')
+						invalidLine = true;
+				});
+				if(invalidLine){
+					req.flash("error", "Hiányzó egyéni mértékegység megnevezések!");
+					return res.redirect('/transaction/' + req.params.number);
+				}
+				if(!foundTransaction.invoiceGrossAmount){
+					req.flash("error", "Összegző adatok hiányoznak!");
+					return res.redirect('/transaction/' + req.params.number);
+				}
+				
+				User.findOne({username: req.session.username, password: sha512(req.body.password)}, function(err, user) {
+					if(err){
+						console.log(err);
+						req.flash("error", err.message);
+						return res.redirect('/transaction/' + req.params.number);
+					}
+					if(!user){
+						req.flash("error", "Hibás jelszó!");
+						return res.redirect('/transaction/' + req.params.number);
+					} 
+
+					//decrypt technical data
+					var key = req.body.password;
+					if(key.length > 16)
+						key = key.substring(0, 16);
+					while(key.length < 16)
+						key = key + 'X';
+
+					var navUsername = aes.decrypt(key, user.navUsername);
+					while(navUsername.charCodeAt(navUsername.length - 1) < 32)
+						navUsername = navUsername.slice(0, -1);
+
+					var navPassword	= aes.decrypt(key, user.navPassword);
+					while(navPassword.charCodeAt(navPassword.length - 1) < 32)
+						navPassword = navPassword.slice(0, -1);
+
+					var xmlsign 	= aes.decrypt(key, user.xmlsign);
+					while(xmlsign.charCodeAt(xmlsign.length - 1) < 32)
+						xmlsign = xmlsign.slice(0, -1);
+					
+					var xmlexchange	= aes.decrypt(key, user.xmlexchange);
+					while(xmlexchange.charCodeAt(xmlexchange.length - 1) < 32)
+						xmlexchange = xmlexchange.slice(0, -1);
+
+					//send API request
+					var replyToClient = apireq.setRequest('manageInvoice', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: xmlexchange, taxNumber: user.taxNumber}, foundTransaction); 	
+					new Promise((resolve, reject) => { 												
+						if (replyToClient)														
+							resolve(replyToClient);													
+					})																				
+					.then(replyToClient => {
+						if(replyToClient == 'request_error'){
+							req.flash("error", "Sikertelen azonosítás - lejárt technikai felhasználó vagy helytelen XML cserekulcs");
+							return res.redirect('/transaction/' + req.params.number);
+						}
+						else{
+							if(replyToClient == 'server_error'){
+								req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+								return res.redirect('/transaction/' + req.params.number);
+							}
+							else{
+								foundTransaction.transactionId = replyToClient;
+								foundTransaction.transactionStatus = 'Aláírva';
+								foundTransaction.lastUpdateDate = date_now;
+								foundTransaction.save();
+									
+								req.flash("success", "Sikeres adatszolgáltatás! Kapott azonosító: " + replyToClient);
+								res.redirect('/dashboard');
+							}
+						}
+					});
+				});	
+			}
+		}
+	});
+});
+	
 
 
 module.exports = router;

@@ -12,24 +12,7 @@ var queryTransactionStatus	= require("./queryTransactionStatus");
 var queryTaxpayer			= require("./queryTaxpayer");
 var tokenExchange			= require("./tokenExchange");
 
-var timestamp = new Date(); /**/
 
-/*var user = {
-	login: 'aar1zbooepaxmwu',
-	password: '2ed63e96d609e096e840c1e16178c72c2f9dd40f2c070903ddc5d6badc1c22f4f783500b954ca0662773a8957735a02c33ca1b4e317ae8ce00da7b12f2016902',
-	xmlsign: '52-8227-88b7adf566682KAPEQ0GTENJ',
-	xmlexchange: '78112KAPEQ0H1XDY',
-	taxNumber: '10683424'
-};
-
-var requestData = {taxNumber: '10683424'}; 
-
-var replyToClient = setRequest('queryTaxpayer', user, requestData); 	
-new Promise((resolve, reject) => { 												
-	if (replyToClient)														
-		resolve(replyToClient);													
-})																				
-.then(replyToClient => console.log(replyToClient));	*/							
 
 async function setRequest(requestType, user, requestData){
 	
@@ -37,7 +20,8 @@ async function setRequest(requestType, user, requestData){
 	var requestId 	= 'IB' + user.login.substring(1, 10) + date_now.mask();
 	if(requestType == 'tokenExchange')
 		requestId = requestId + 't';
-
+	if(requestType == 'queryTransactionStatus')
+		requestId = requestId + requestData.index;
 	var reqbody;
 	var processedResponse;
 	var token;
@@ -68,7 +52,7 @@ async function setRequest(requestType, user, requestData){
 			break;
 	}
 
-	console.log(reqbody);
+	/*console.log(reqbody);*/
 	const res = await sendRequest(requestType, user, reqbody).catch(err => console.log(err));
 	if (res == 'error')
 		processedResponse = 'request_error';
@@ -80,6 +64,8 @@ async function setRequest(requestType, user, requestData){
 	}
 	return processedResponse;
 }
+
+
 
 function sendRequest(requestType, user, reqbody){
 	return new Promise((resolve, reject) => {
@@ -94,10 +80,10 @@ function sendRequest(requestType, user, reqbody){
 				return resolve('server_error');
 			if(!response)
 				return resolve('server_error');
-			console.log(response.statusCode);/**/
-			console.log(body);/**/
+			/*console.log(response.statusCode);*/
+			/*console.log(body);*/
         	resp = convert.xml2js(body, { compact: true });
-			console.log(util.inspect(resp, {showHidden: false, depth: null})); /**/
+			/*console.log(util.inspect(resp, {showHidden: false, depth: null})); */
 			if(response.statusCode != 200)
 				resolve('error');
 			else
@@ -105,6 +91,8 @@ function sendRequest(requestType, user, reqbody){
 		});
 	});
 }
+
+
 
 function processResponse(requestType, rawResponse, user){	
 	switch(requestType){

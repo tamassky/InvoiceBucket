@@ -25,7 +25,7 @@ function buildBasicRequestType(requestId, user, indexHashExists, indexHash){
 	var date_now			= new Date();
 	var utctime 			= date_now.toISOString();
 	var partial				= requestId + date_now.mask() + user.xmlsign;
-	console.log(partial);
+
 	if(indexHashExists)
 		var requestSignature = sha3_512(partial + indexHash).toUpperCase();
 	else

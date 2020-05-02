@@ -88,12 +88,21 @@
 		
 		<div class="container">
 			<div class="jumbotron">
-				<h1 class="text-center">Tranzakciók</h1>
-				<br>
+				<h1 class="text-center" style="margin-bottom: 20px">Tranzakciók</h1>
 				<h4 class="text-center">Az adatszolgáltatások a következő szervezet nevében fognak történni:</h4>
 				<h4 class="text-center"><%= organization %></h4>
 				<br>
-				<ul class="nav nav-pills">
+				<div class="row">
+					<form style="margin-left: 15px; width: 193px;" action="/dashboard" method="POST" id="refresh">
+						<div class="form-group">
+							<input class="form-control" type="password" name="password" placeholder="InvoiceBucket jelszó *">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success">Aláírt tranzakciók frissítése</button>
+						</div>	
+					</form>
+				</div>
+				<ul style="margin-bottom: 20px; margin-top: 10px;" class="nav nav-pills">
 					<li role="presentation" class="active" class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Új<span class="caret"></span></a>
 						<ul class="dropdown-menu">
@@ -101,42 +110,62 @@
 						</ul>
 					</li>
 				</ul>
-				<br>
-				<table class="table table-hover">
-					<tr>
-						<th>#</th>
-						<th>Tranzakció típusa</th>
-						<th>Számlaszám</th>
-						<th>Kapott azonosító</th>
-						<th>Állapot</th>
-						<th>Utolsó módosítás (UTC)</th>
-						<th>Törlés</th>
-					</tr>
-					<% owntransactions.forEach(function(owntransaction){ %>
+				<div class="table-responsive">
+					<table class="table table-hover">
 						<tr>
-							<td><a href="/transaction/<%= owntransaction.number %>"><%= owntransaction.number %></a></td>
-							<% if(owntransaction.invoiceOperation == 'CREATE' && owntransaction.invoiceCategory == 'SIMPLIFIED'){ %>
-								<td>Egyszerűsített számla</td>
-							<% } else{ %>
-								<td></td>
-							<% } %>
-							<td><%= owntransaction.invoiceNumber %></td>
-							<td><%= owntransaction.transactionId %></td>
-							<td><%= owntransaction.transactionStatus %></td>
-							<td><%= owntransaction.lastUpdateDate.toLocaleString('hu-HU') %></td>
-							<% if(owntransaction.transactionStatus == 'Piszkozat'){ %>
-								<td><a style="color:red" class="glyphicon glyphicon-trash" href="/transaction/<%= owntransaction.number %>/delete"></a></td>
-							<% } else {%>
-								<td></td>
-							<% } %>
+							<th>#</th>
+							<th>Tranzakció típusa</th>
+							<th>Számlaszám</th>
+							<th>Kapott azonosító</th>
+							<th>Állapot</th>
+							<th>Utolsó módosítás (UTC)</th>
+							<th>Törlés</th>
 						</tr>
-					<% }); %>
-				</table>
+						<% owntransactions.forEach(function(owntransaction){ %>
+							<tr>
+								<td><a href="/transaction/<%= owntransaction.number %>"><%= owntransaction.number %></a></td>
+								<% if(owntransaction.invoiceOperation == 'CREATE' && owntransaction.invoiceCategory == 'SIMPLIFIED'){ %>
+									<td>Egyszerűsített számla</td>
+								<% } else{ %>
+									<td></td>
+								<% } %>
+								<td><%= owntransaction.invoiceNumber %></td>
+								<td><%= owntransaction.transactionId %></td>
+								<td><%= owntransaction.transactionStatus %></td>
+								<td><%= owntransaction.lastUpdateDate.toLocaleString('hu-HU') %></td>
+								<% if(owntransaction.transactionStatus == 'Piszkozat'){ %>
+									<td><a style="color:red" class="glyphicon glyphicon-trash" href="/transaction/<%= owntransaction.number %>/delete"></a></td>
+								<% } else {%>
+									<td></td>
+								<% } %>
+							</tr>
+						<% }); %>
+					</table>
+				</div>
 			</div>
 		</div>
 		
 		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#refresh').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					password: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					}
+				}
+			});
+		</script>
 	
 	</body>
 </html>

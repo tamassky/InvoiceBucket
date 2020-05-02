@@ -91,58 +91,64 @@
 				<h1 class="text-center">Egyszerűsített számla</h1>
 				<h2 class="text-center"><strong>Tranzakció #<%= transaction.number %> (<%= transaction.transactionStatus %>)</strong></h2>
 				<br>
+				<% transaction.transactionValidation.forEach(function(messages){ %>
+					<h4 style="color: red;"><%= messages %></h4>
+					<br>
+				<% }); %>
 				<h2 class="text-left">
 					<strong>Számla alapadatai</strong>
 					<% if(transaction.transactionStatus == 'Piszkozat'){ %>
 						<a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/basicdata"></a>
 					<% } %>
 				</h2>
-				<table class="table table-hover">
-					<tr><td>Sorszám</td><td><%= transaction.invoiceNumber %></td></tr>
-					<tr><td>Számla kelte</td><td><%= transaction.invoiceIssueDate %></td></tr>
-					<tr><td>Teljesítés dátuma</td><td><%= transaction.invoiceDeliveryDate %></td></tr>
-					<tr>
-						<td>Fizetési mód</td>
-						<% switch(transaction.paymentMethod){
-							case 'TRANSFER': %>
-								<td>Átutalás</td>
-								<% break; %>
-							<% case 'CASH': %>
-								<td>Készpénz</td>
-								<% break; %>
-							<% case 'CARD': %>
-								<td>Bankkártya</td>
-								<% break; %>
-							<% case 'VOUCHER': %>
-								<td>Utalvány</td>
-								<% break; %>
-							<% case 'OTHER': %>
-								<td>Egyéb</td>
-								<% break; %>
-							<% default: %>
-								<td></td>	
-						<% } %>
-					</tr>
-					<tr>
-						<td>Megjelenési forma</td>
-						<% switch(transaction.invoiceAppearance){
-							case 'PAPER': %>
-								<td>Papír alapú számla</td>
-								<% break; %>
-							<% case 'ELECTRONIC': %>
-								<td>Elektronikus, nem EDI számla</td>
-								<% break; %>
-							<% case 'EDI': %>
-								<td>Elektronikus, EDI számla</td>
-								<% break; %>
-							<% case 'UNKNOWN': %>
-								<td>Ismeretlen</td>
-								<% break; %>
-							<% default: %>
-								<td></td>	
-						<% } %>
-					</tr>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<tr><td>Sorszám</td><td><%= transaction.invoiceNumber %></td></tr>
+						<tr><td>Számla kelte</td><td><%= transaction.invoiceIssueDate %></td></tr>
+						<tr><td>Teljesítés dátuma</td><td><%= transaction.invoiceDeliveryDate %></td></tr>
+						<tr>
+							<td>Fizetési mód</td>
+							<% switch(transaction.paymentMethod){
+								case 'TRANSFER': %>
+									<td>Átutalás</td>
+									<% break; %>
+								<% case 'CASH': %>
+									<td>Készpénz</td>
+									<% break; %>
+								<% case 'CARD': %>
+									<td>Bankkártya</td>
+									<% break; %>
+								<% case 'VOUCHER': %>
+									<td>Utalvány</td>
+									<% break; %>
+								<% case 'OTHER': %>
+									<td>Egyéb</td>
+									<% break; %>
+								<% default: %>
+									<td></td>	
+							<% } %>
+						</tr>
+						<tr>
+							<td>Megjelenési forma</td>
+							<% switch(transaction.invoiceAppearance){
+								case 'PAPER': %>
+									<td>Papír alapú számla</td>
+									<% break; %>
+								<% case 'ELECTRONIC': %>
+									<td>Elektronikus, nem EDI számla</td>
+									<% break; %>
+								<% case 'EDI': %>
+									<td>Elektronikus, EDI számla</td>
+									<% break; %>
+								<% case 'UNKNOWN': %>
+									<td>Ismeretlen</td>
+									<% break; %>
+								<% default: %>
+									<td></td>	
+							<% } %>
+						</tr>
+					</table>
+				</div>
 				<br>
 				<h2 class="text-left">
 					<strong>Számlakibocsátó adatai</strong>
@@ -150,13 +156,15 @@
 						<a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/supplier"></a>
 					<% } %>
 				</h2>
-				<table class="table table-hover">
-					<tr><td>Adószám</td><td><%= transaction.supplierTaxpayerId %><%= transaction.supplierVatCode %><%= transaction.supplierCountyCode %></td></tr>
-					<tr><td>Név</td><td><%= transaction.supplierName %></td></tr>
-					<tr><td>Irányítószám</td><td><%= transaction.supplierPostalCode %></td></tr>
-					<tr><td>Település</td><td><%= transaction.supplierCity %></td></tr>
-					<tr><td>További címadatok</td><td><%= transaction.supplierAdditionalAddressDetail %></td></tr>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<tr><td>Adószám</td><td><%= transaction.supplierTaxpayerId %><%= transaction.supplierVatCode %><%= transaction.supplierCountyCode %></td></tr>
+						<tr><td>Név</td><td><%= transaction.supplierName %></td></tr>
+						<tr><td>Irányítószám</td><td><%= transaction.supplierPostalCode %></td></tr>
+						<tr><td>Település</td><td><%= transaction.supplierCity %></td></tr>
+						<tr><td>További címadatok</td><td><%= transaction.supplierAdditionalAddressDetail %></td></tr>
+					</table>
+				</div>
 				<br>
 				<h2 class="text-left">
 					<strong>Vevő adatai</strong>
@@ -164,13 +172,15 @@
 						<a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/customer"></a>
 					<% } %>
 				</h2>
-				<table class="table table-hover">
-					<tr><td>Adószám</td><td><%= transaction.customerTaxpayerId %><%= transaction.customerVatCode %><%= transaction.customerCountyCode %></td></tr>
-					<tr><td>Név</td><td><%= transaction.customerName %></td></tr>
-					<tr><td>Irányítószám</td><td><%= transaction.customerPostalCode %></td></tr>
-					<tr><td>Település</td><td><%= transaction.customerCity %></td></tr>
-					<tr><td>További címadatok</td><td><%= transaction.customerAdditionalAddressDetail %></td></tr>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<tr><td>Adószám</td><td><%= transaction.customerTaxpayerId %><%= transaction.customerVatCode %><%= transaction.customerCountyCode %></td></tr>
+						<tr><td>Név</td><td><%= transaction.customerName %></td></tr>
+						<tr><td>Irányítószám</td><td><%= transaction.customerPostalCode %></td></tr>
+						<tr><td>Település</td><td><%= transaction.customerCity %></td></tr>
+						<tr><td>További címadatok</td><td><%= transaction.customerAdditionalAddressDetail %></td></tr>
+					</table>
+				</div>
 				<br>
 				<h2 class="text-left">
 					<strong>Sorok</strong>
@@ -178,94 +188,95 @@
 						<a style="color:green" class="glyphicon glyphicon-plus" href="/transaction/<%= transaction.number %>/line/new"></a>
 					<% } %>
 				</h2>
-				<table class="table table-hover">
-					<tr>
-						<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-							<th></th>
-						<% } %>
-						<th>Tétel megnevezése</th>
-						<th>Mértékegység</th>
-						<th>Egyéni mértékegység</th>
-						<th>Mennyiség</th>
-						<th>Egységár</th>
-						<th>Érték</th>
-						<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-							<th></th>
-						<% } %>
-					</tr>
-					<% transaction.lines.forEach(function(lines){ %>
+				<div class="table-responsive">
+					<table class="table table-hover">
 						<tr>
 							<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-								<td><a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/line/<%= lines._id %>/edit"></a></td>
+								<th></th>
 							<% } %>
-							<td><%= lines.lineDescription %></td>
-							<% switch(lines.unitOfMeasure){
-								case 'PIECE': %>
-									<td>Darab</td>
-									<% break; %>
-								<% case 'KILOGRAM': %>
-									<td>Kilogramm</td>
-									<% break; %>
-								<% case 'TON': %>
-									<td>Tonna</td>
-									<% break; %>
-								<% case 'KWH': %>
-									<td>Kilowattóra</td>
-									<% break; %>
-								<% case 'DAY': %>
-									<td>Nap</td>
-									<% break; %>
-								<% case 'HOUR': %>
-									<td>Óra</td>
-									<% break; %>
-								<% case 'MINUTE': %>
-									<td>Perc</td>
-									<% break; %>
-								<% case 'MONTH': %>
-									<td>Hónap</td>
-									<% break; %>
-								<% case 'LITER': %>
-									<td>Liter</td>
-									<% break; %>
-								<% case 'KILOMETER': %>
-									<td>Kilométer</td>
-									<% break; %>
-								<% case 'CUBIC_METER': %>
-									<td>Köbméter</td>
-									<% break; %>
-								<% case 'METER': %>
-									<td>Méter</td>
-									<% break; %>
-								<% case 'LINEAR_METER': %>
-									<td>Folyóméter</td>
-									<% break; %>
-								<% case 'CARTON': %>
-									<td>Karton</td>
-									<% break; %>
-								<% case 'PACK': %>
-									<td>Csomag</td>
-									<% break; %>
-								<% case 'OWN': %>
-									<td>Egyéni</td>
-									<% break; %>
-								<% default: %>
-									<td></td>	
-							<% } %>
-							<td><%= lines.unitOfMeasureOwn %></td>
-							<td><%= lines.quantity %></td>
-							<td><%= lines.unitPrice %></td>
-							<td><%= lines.lineGrossAmountSimplified %></td>
+							<th>Tétel megnevezése</th>
+							<th>Mértékegység</th>
+							<th>Egyéni mértékegység</th>
+							<th>Mennyiség</th>
+							<th>Egységár</th>
+							<th>Érték</th>
 							<% if(transaction.transactionStatus == 'Piszkozat'){ %>
-								<td>
-								<!--	<a style="color:red" class="glyphicon glyphicon-trash" href="/transaction/<%= transaction.number %>/line/<%= lines._id %>?_method=DELETE"></a> -->
-									<form id="delete-line" action="/transaction/<%= transaction.number %>/line/<%= lines._id %>?_method=DELETE" method="POST">
-										<a class="glyphicon glyphicon-trash" href="#0" onclick="document.getElementById('delete-line').submit();" style="color:red"></a>
-									</form>
-								</td>
+								<th></th>
 							<% } %>
 						</tr>
-					<% }); %>
-				</table>
+						<% transaction.lines.forEach(function(lines){ %>
+							<tr>
+								<% if(transaction.transactionStatus == 'Piszkozat'){ %>
+									<td><a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/line/<%= lines._id %>/edit"></a></td>
+								<% } %>
+								<td><%= lines.lineDescription %></td>
+								<% switch(lines.unitOfMeasure){
+									case 'PIECE': %>
+										<td>Darab</td>
+										<% break; %>
+									<% case 'KILOGRAM': %>
+										<td>Kilogramm</td>
+										<% break; %>
+									<% case 'TON': %>
+										<td>Tonna</td>
+										<% break; %>
+									<% case 'KWH': %>
+										<td>Kilowattóra</td>
+										<% break; %>
+									<% case 'DAY': %>
+										<td>Nap</td>
+										<% break; %>
+									<% case 'HOUR': %>
+										<td>Óra</td>
+										<% break; %>
+									<% case 'MINUTE': %>
+										<td>Perc</td>
+										<% break; %>
+									<% case 'MONTH': %>
+										<td>Hónap</td>
+										<% break; %>
+									<% case 'LITER': %>
+										<td>Liter</td>
+										<% break; %>
+									<% case 'KILOMETER': %>
+										<td>Kilométer</td>
+										<% break; %>
+									<% case 'CUBIC_METER': %>
+										<td>Köbméter</td>
+										<% break; %>
+									<% case 'METER': %>
+										<td>Méter</td>
+										<% break; %>
+									<% case 'LINEAR_METER': %>
+										<td>Folyóméter</td>
+										<% break; %>
+									<% case 'CARTON': %>
+										<td>Karton</td>
+										<% break; %>
+									<% case 'PACK': %>
+										<td>Csomag</td>
+										<% break; %>
+									<% case 'OWN': %>
+										<td>Egyéni</td>
+										<% break; %>
+									<% default: %>
+										<td></td>	
+								<% } %>
+								<td><%= lines.unitOfMeasureOwn %></td>
+								<td><%= lines.quantity %></td>
+								<td><%= lines.unitPrice %></td>
+								<td><%= lines.lineGrossAmountSimplified %></td>
+								<% if(transaction.transactionStatus == 'Piszkozat'){ %>
+									<td>
+										<form id="delete-line" action="/transaction/<%= transaction.number %>/line/<%= lines._id %>?_method=DELETE" method="POST">
+											<a class="glyphicon glyphicon-trash" href="#0" onclick="document.getElementById('delete-line').submit();" style="color:red"></a>
+										</form>
+									</td>
+								<% } %>
+							</tr>
+						<% }); %>
+					</table>
+				</div>
 				<br>
 				<h2 class="text-left">
 					<strong>Összegző adatok</strong>
@@ -273,33 +284,71 @@
 						<a class="glyphicon glyphicon-pencil" href="/transaction/<%= transaction.number %>/summary"></a>
 					<% } %>
 				</h2>
-				<table class="table table-hover">
-					<tr>
-						<td>Áfatartalom</td>
-						<% switch(transaction.vatContent){
-							case '0.2126': %>
-								<td>21.26%</td>
-								<% break; %>
-							<% case '0.1525': %>
-								<td>15.25%</td>
-								<% break; %>
-							<% case '0.0476': %>
-								<td>4.76%</td>
-								<% break; %>
-							<% case '0': %>
-								<td>Áfamentes</td>
-								<% break; %>
-							<% default: %>
-								<td></td>	
-						<% } %>
-					</tr>
-					<tr><td>Fizetendő</td><td><%= transaction.invoiceGrossAmount %></td></tr>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<tr>
+							<td>Áfatartalom</td>
+							<% switch(transaction.vatContent){
+								case '0.2126': %>
+									<td>21.26%</td>
+									<% break; %>
+								<% case '0.1525': %>
+									<td>15.25%</td>
+									<% break; %>
+								<% case '0.0476': %>
+									<td>4.76%</td>
+									<% break; %>
+								<% case '0': %>
+									<td>Áfamentes</td>
+									<% break; %>
+								<% default: %>
+									<td></td>	
+							<% } %>
+						</tr>
+						<tr><td>Fizetendő</td><td><%= transaction.invoiceGrossAmount %></td></tr>
+					</table>
+				</div>
+				<% if(transaction.transactionStatus == 'Piszkozat'){ %>
+					<br>
+					<h2 class="text-left"><strong>Tranzakció aláírása</strong></h2>
+					<div class="row">
+						<div style="width: 30%; margin: 20px;">
+							<form action="/transaction/<%= transaction.number %>/sign" method="POST" id="signing">
+								<div class="form-group">
+									<label>InvoiceBucket jelszó *</label>
+									<input class="form-control" type="password" name="password">
+								</div>
+								<div class="form-group">
+									<button type="submit" class="btn btn-success">Aláírás</button>
+								</div>	
+							</form>
+						</div>
+					</div>
+				<% } %>
 			</div>
 		</div>
 		
 		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.4.5/js/bootstrapvalidator.min.js'></script>
+		<script type='text/javascript'>
+			$('#signing').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					password: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					}
+				}
+			});
+		</script>
 	
 	</body>
 </html>

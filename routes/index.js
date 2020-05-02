@@ -7,6 +7,7 @@ var base64 		= require('js-base64').Base64;
 var User 		= require("../models/user");
 var Transaction	= require("../models/transaction");
 var apireq		= require("../request/request");
+var util 			= require('util');/**/
 
 
 
@@ -126,6 +127,119 @@ router.get("/dashboard", function(req, res){
 	else
 		res.redirect('/login');
 })
+
+
+
+//refresh pending transactions
+router.post("/dashboard", function(req, res){
+	var date_now = new Date();
+	Transaction.find({owner: req.session.username, transactionStatus: 'Aláírva'}, function(err, signedTransactions){
+		if(err){
+			console.log(err);
+			req.flash("error", err.message);
+			return res.redirect("/dashboard");
+		}
+		//find the data of user owning the transaction	
+		User.findOne({username: req.session.username, password: sha512(req.body.password)}, function(err, user) {
+			if(err){
+				console.log(err);
+				stop = true;
+				req.flash("error", err.message);
+				return res.redirect("/dashboard");
+			}
+			if(!user){
+				stop = true;
+				req.flash("error", "Hibás jelszó");
+				return res.redirect("/dashboard");
+			}
+			//decrypt technical data
+			var key = req.body.password;
+			if(key.length > 16)
+				key = key.substring(0, 16);
+			while(key.length < 16)
+				key = key + 'X';
+
+			var navUsername = aes.decrypt(key, user.navUsername);
+			while(navUsername.charCodeAt(navUsername.length - 1) < 32)
+				navUsername = navUsername.slice(0, -1);
+
+			var navPassword	= aes.decrypt(key, user.navPassword);
+			while(navPassword.charCodeAt(navPassword.length - 1) < 32)
+				navPassword = navPassword.slice(0, -1);
+
+			var xmlsign 	= aes.decrypt(key, user.xmlsign);
+			while(xmlsign.charCodeAt(xmlsign.length - 1) < 32)
+				xmlsign = xmlsign.slice(0, -1);
+			
+			signedTransactions.forEach(function(transaction, index){
+				//send API request
+				var replyToClient = apireq.setRequest('queryTransactionStatus', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: null, taxNumber: user.taxNumber}, {transactionId: transaction.transactionId, index: index}); 	
+				new Promise((resolve, reject) => { 												
+					if (replyToClient)														
+						resolve(replyToClient);													
+				})																				
+				.then(replyToClient => {
+					if(replyToClient == 'request_error'){
+						console.log("Request error - transaction #" + transaction.number);
+					}
+					else{
+						if(replyToClient == 'server_error'){
+							console.log("Server error");
+						}
+						else{
+							/*console.log("Transaction #" + transaction.number + " - " + util.inspect(replyToClient, {showHidden: false, depth: null}));*/
+							if(replyToClient.invoiceStatus._text == 'ABORTED'){
+								Transaction.findOneAndUpdate({number: transaction.number}, {transactionStatus: 'Elutastíva', lastUpdateDate: date_now}, function(err, foundTransaction) {
+									if(err){
+										console.log(err);
+									}
+									if(replyToClient.hasOwnProperty('businessValidationMessages')){
+										var message = '';
+										if(Array.isArray(replyToClient.businessValidationMessages)){
+											replyToClient.businessValidationMessages.forEach(function(validationMessage){
+												message = message + 'Hiba: ' + validationMessage.message._text;
+												foundTransaction.transactionValidation.push(message);
+											});
+										} else{
+											message = message + 'Hiba: ' + replyToClient.businessValidationMessages.message._text;
+											foundTransaction.transactionValidation.push(message);
+										}
+										foundTransaction.save();
+									}
+									req.flash("success", "Függőben levő tranzakciók frissítve");
+									return res.redirect("/dashboard");
+								});
+							}
+							if(replyToClient.invoiceStatus._text == 'DONE'){
+								Transaction.findOneAndUpdate({number: transaction.number}, {transactionStatus: 'Elfogadva', lastUpdateDate: date_now}, function(err, foundTransaction) {
+									if(err){
+										console.log(err);
+									}
+									if(replyToClient.hasOwnProperty('businessValidationMessages')){
+										var message = '';
+										if(Array.isArray(replyToClient.businessValidationMessages)){
+											replyToClient.businessValidationMessages.forEach(function(validationMessage){
+												message = message + 'Figyelmeztetés: ' + validationMessage.message._text;
+												foundTransaction.transactionValidation.push(message);
+											});
+										} else{
+											message = message + 'Figyelmeztetés: ' + replyToClient.businessValidationMessages.message._text;
+											foundTransaction.transactionValidation.push(message);
+										}
+										foundTransaction.transactionStatus = 'Elfogadva figyelmeztetésekkel';
+										foundTransaction.save();
+									}
+									req.flash("success", "Függőben levő tranzakciók frissítve");
+									return res.redirect("/dashboard")
+								});
+							}
+						}
+					}
+				});
+			});
+		});
+	});
+});
 
 
 
