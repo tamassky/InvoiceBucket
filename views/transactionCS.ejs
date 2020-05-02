@@ -90,10 +90,12 @@
 			<div class="jumbotron">
 				<h1 class="text-center">Egyszerűsített számla</h1>
 				<h2 class="text-center"><strong>Tranzakció #<%= transaction.number %> (<%= transaction.transactionStatus %>)</strong></h2>
-				<br>
+				<% if(transaction.annuled){ %>
+					<h3 class="text-center"><strong>Érvénytelenítés azonosítója: <%= transaction.annulmentId %></strong></h3>
+					<br>
+				<% } %>
 				<% transaction.transactionValidation.forEach(function(messages){ %>
 					<h4 style="color: red;"><%= messages %></h4>
-					<br>
 				<% }); %>
 				<h2 class="text-left">
 					<strong>Számla alapadatai</strong>
@@ -325,6 +327,36 @@
 						</div>
 					</div>
 				<% } %>
+				<% if(transaction.transactionStatus == 'Elfogadva' || transaction.transactionStatus == 'Elfogadva figyelmeztetésekkel'){ %>
+					<br>
+					<h2 class="text-left"><strong>Technikai érvénytelenítés kérése</strong></h2>
+					<div class="row">
+						<div style="width: 30%; margin: 20px;">
+							<form action="/transaction/<%= transaction.number %>/annul" method="POST" id="annulment">
+								<div class="form-group">
+									<label>Érvénytelenítés kódja *</label>
+									<select class="form-control" name="annulmentCode">
+										<option value="" selected disabled>-Válassz-</option>
+										<option value="ERRATIC_INVOICE_NUMBER">Számla sorszáma hibás</option>
+										<option value="ERRATIC_INVOICE_ISSUE_DATE">Számla kelte hibás</option>
+										<option value="ERRATIC_DATA">Egyéb hiba</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Érvénytelenítés oka *</label>
+									<input class="form-control" type="text" name="annulmentReason">
+								</div>
+								<div class="form-group">
+									<label>InvoiceBucket jelszó *</label>
+									<input class="form-control" type="password" name="password">
+								</div>
+								<div class="form-group">
+									<button type="submit" class="btn btn-danger">Érvénytelenítés</button>
+								</div>	
+							</form>
+						</div>
+					</div>
+				<% } %>
 			</div>
 		</div>
 		
@@ -349,6 +381,37 @@
 				}
 			});
 		</script>
-	
+		<script type='text/javascript'>
+			$('#annulment').bootstrapValidator({
+				feedbackIcons: {
+					valid: 'glyphicon glyphicon-ok',
+					invalid: 'glyphicon glyphicon-remove',
+					validating: 'glyphicon glyphicon-refresh'
+				},
+				fields: {
+					annulmentCode: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					annulmentReason: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					},
+					password: {
+						validators: {
+							notEmpty: {
+								message: 'Kötelező mező'
+							}
+						}
+					}
+				}
+			});
+		</script>
 	</body>
 </html>

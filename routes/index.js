@@ -187,27 +187,24 @@ router.post("/dashboard", function(req, res){
 							console.log("Server error");
 						}
 						else{
-							/*console.log("Transaction #" + transaction.number + " - " + util.inspect(replyToClient, {showHidden: false, depth: null}));*/
 							if(replyToClient.invoiceStatus._text == 'ABORTED'){
 								Transaction.findOneAndUpdate({number: transaction.number}, {transactionStatus: 'Elutastíva', lastUpdateDate: date_now}, function(err, foundTransaction) {
 									if(err){
 										console.log(err);
 									}
 									if(replyToClient.hasOwnProperty('businessValidationMessages')){
-										var message = '';
+										var message;
 										if(Array.isArray(replyToClient.businessValidationMessages)){
 											replyToClient.businessValidationMessages.forEach(function(validationMessage){
-												message = message + 'Hiba: ' + validationMessage.message._text;
+												message = 'Hiba: ' + validationMessage.message._text;
 												foundTransaction.transactionValidation.push(message);
 											});
 										} else{
-											message = message + 'Hiba: ' + replyToClient.businessValidationMessages.message._text;
+											message = 'Hiba: ' + replyToClient.businessValidationMessages.message._text;
 											foundTransaction.transactionValidation.push(message);
 										}
 										foundTransaction.save();
 									}
-									req.flash("success", "Függőben levő tranzakciók frissítve");
-									return res.redirect("/dashboard");
 								});
 							}
 							if(replyToClient.invoiceStatus._text == 'DONE'){
@@ -216,27 +213,27 @@ router.post("/dashboard", function(req, res){
 										console.log(err);
 									}
 									if(replyToClient.hasOwnProperty('businessValidationMessages')){
-										var message = '';
+										var message;
 										if(Array.isArray(replyToClient.businessValidationMessages)){
 											replyToClient.businessValidationMessages.forEach(function(validationMessage){
-												message = message + 'Figyelmeztetés: ' + validationMessage.message._text;
+												message = 'Figyelmeztetés: ' + validationMessage.message._text;
 												foundTransaction.transactionValidation.push(message);
 											});
 										} else{
-											message = message + 'Figyelmeztetés: ' + replyToClient.businessValidationMessages.message._text;
+											message = 'Figyelmeztetés: ' + replyToClient.businessValidationMessages.message._text;
 											foundTransaction.transactionValidation.push(message);
 										}
 										foundTransaction.transactionStatus = 'Elfogadva figyelmeztetésekkel';
 										foundTransaction.save();
 									}
-									req.flash("success", "Függőben levő tranzakciók frissítve");
-									return res.redirect("/dashboard")
 								});
 							}
 						}
 					}
 				});
 			});
+			req.flash("success", "Tranzakciók állapotának lekérdezése megtörtént. Frissítsd az oldalt!");
+			return res.redirect("/dashboard");
 		});
 	});
 });

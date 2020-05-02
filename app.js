@@ -16,8 +16,6 @@ var express 			= require("express"),
 	transactionRoutes	= require("./routes/transaction"),
 	lineRoutes			= require("./routes/line"),
 	
-	seedDB				= require("./seeds"),/**/
-	
 	port 				= process.env.PORT,
 	databaseurl			= process.env.DATABASEURL;
 
@@ -58,8 +56,6 @@ app.use(function(req, res, next){
 app.use("/", indexRoutes);
 app.use("/transaction", transactionRoutes);
 app.use("/transaction/:number/line", lineRoutes);
-
-/*seedDB(); */
 
 app.listen(port, function(){
 	console.log("InvoiceBucket server has started on port " + port + "!");

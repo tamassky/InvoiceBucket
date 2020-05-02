@@ -14,7 +14,11 @@ router.get("/new/CS", function(req, res){
 	if(req.session.username){
 		var date_now = new Date();
 		Transaction.findOne({}).sort('-number').exec(function (err, member) {
-			var newNumber = member.number+1;
+			var newNumber
+			if(!member)
+				newNumber = 1;
+			else
+				newNumber = member.number+1;
 			var newTransaction = {
 									number: newNumber,
 									owner: req.session.username,
@@ -46,6 +50,7 @@ router.get("/new/CS", function(req, res){
 									transactionStatus: 'Piszkozat',
 									transactionValidation: [],
 									annuled: false,
+									annulmentId: null,
 									annulmentCode: null,
 									annulmentReason: null,
 									creationDate: date_now,
@@ -432,6 +437,91 @@ router.post("/:number/sign", middleware.checkTransactionOwnership, function(req,
 								foundTransaction.save();
 									
 								req.flash("success", "Sikeres adatszolgáltatás! Kapott azonosító: " + replyToClient);
+								res.redirect('/dashboard');
+							}
+						}
+					});
+				});	
+			}
+		}
+	});
+});
+
+
+
+//annul transaction
+router.post("/:number/annul", middleware.checkTransactionOwnership, function(req, res){
+	var date_now = new Date();
+	Transaction.findOne({number: req.params.number}).populate("lines").exec(function(err, foundTransaction){
+		if(err){
+			req.flash("error", err);
+			res.redirect("/dashboard");
+			console.log(err);
+		} else{
+			if(foundTransaction.transactionStatus != 'Elfogadva' && foundTransaction.transactionStatus != 'Elfogadva figyelmeztetésekkel'){
+				req.flash("error", "A tranzakció nem érvényteleníthető");
+				res.redirect("/dashboard");
+			}
+			else{
+				User.findOne({username: req.session.username, password: sha512(req.body.password)}, function(err, user) {
+					if(err){
+						console.log(err);
+						req.flash("error", err.message);
+						return res.redirect('/transaction/' + req.params.number);
+					}
+					if(!user){
+						req.flash("error", "Hibás jelszó!");
+						return res.redirect('/transaction/' + req.params.number);
+					} 
+
+					//decrypt technical data
+					var key = req.body.password;
+					if(key.length > 16)
+						key = key.substring(0, 16);
+					while(key.length < 16)
+						key = key + 'X';
+
+					var navUsername = aes.decrypt(key, user.navUsername);
+					while(navUsername.charCodeAt(navUsername.length - 1) < 32)
+						navUsername = navUsername.slice(0, -1);
+
+					var navPassword	= aes.decrypt(key, user.navPassword);
+					while(navPassword.charCodeAt(navPassword.length - 1) < 32)
+						navPassword = navPassword.slice(0, -1);
+
+					var xmlsign 	= aes.decrypt(key, user.xmlsign);
+					while(xmlsign.charCodeAt(xmlsign.length - 1) < 32)
+						xmlsign = xmlsign.slice(0, -1);
+					
+					var xmlexchange	= aes.decrypt(key, user.xmlexchange);
+					while(xmlexchange.charCodeAt(xmlexchange.length - 1) < 32)
+						xmlexchange = xmlexchange.slice(0, -1);
+
+					//send API request
+					var replyToClient = apireq.setRequest('manageAnnulment', {login: navUsername, password: sha512(navPassword), xmlsign: xmlsign, xmlexchange: xmlexchange, taxNumber: user.taxNumber}, {annulmentReference: foundTransaction.invoiceNumber, annulmentTimestamp: date_now.toISOString(), annulmentCode: req.body.annulmentCode, annulmentReason: req.body.annulmentReason}); 	
+					new Promise((resolve, reject) => { 												
+						if (replyToClient)														
+							resolve(replyToClient);													
+					})																				
+					.then(replyToClient => {
+						if(replyToClient == 'request_error'){
+							req.flash("error", "Sikertelen azonosítás - lejárt technikai felhasználó vagy helytelen XML cserekulcs");
+							return res.redirect('/transaction/' + req.params.number);
+						}
+						else{
+							if(replyToClient == 'server_error'){
+								req.flash("error", "Az Online Számla rendszer nem elérhető. Próbálkozz újra később!");
+								return res.redirect('/transaction/' + req.params.number);
+							}
+							else{
+								foundTransaction.annuled = true;
+								foundTransaction.annulmentId = replyToClient;
+								foundTransaction.transactionStatus = 'Érvénytelenítve';
+								foundTransaction.lastUpdateDate = date_now;
+								foundTransaction.save();
+									
+								req.flash("success", "Érvénytelenítési kérelem befogadva! Kapott azonosító: " + replyToClient);
+								req.flash("success", "Az érvénytelenítést jóvá kell hagyja egy erre jogosult felhasználó az Online Számla webes irányítópultjában.");
 								res.redirect('/dashboard');
 							}
 						}

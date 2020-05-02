@@ -36,6 +36,7 @@ var transactionSchema = new mongoose.Schema({
 	transactionStatus: String,
 	transactionValidation: [String],
 	annuled: Boolean,
+	annulmentId: String,
 	annulmentCode: String,
 	annulmentReason: String,
 	creationDate: Date,
