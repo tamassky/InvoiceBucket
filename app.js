@@ -1,8 +1,7 @@
 var express 			= require("express"),
 	app 				= express(),
 	bodyParser 			= require("body-parser"),
-	cookieParser 		= require('cookie-parser'),
-	methodOverride  	= require("method-override"),
+	methodOverride		= require("method-override"),
 	session 			= require('express-session'),
 	mongoose 			= require("mongoose"),
 	flash				= require("connect-flash"),
@@ -28,8 +27,6 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(cookieParser());
 
 app.use(session({
     key: 'user_sid',
