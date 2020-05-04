@@ -292,7 +292,6 @@ router.post("/techdata", function(req, res){
 						key = key.substring(0, 16);
 					while(key.length < 16)
 						key = key + 'X';
-					console.log(key);
 					
 					var navUsernameEnc 	= aes.encrypt(key, navUsername);
 					var navPasswordEnc	= aes.encrypt(key, navPassword);

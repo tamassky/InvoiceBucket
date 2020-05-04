@@ -52,7 +52,6 @@ async function setRequest(requestType, user, requestData){
 			break;
 	}
 
-	/*console.log(reqbody);*/
 	const res = await sendRequest(requestType, user, reqbody).catch(err => console.log(err));
 	if (res == 'error')
 		processedResponse = 'request_error';
@@ -80,10 +79,7 @@ function sendRequest(requestType, user, reqbody){
 				return resolve('server_error');
 			if(!response)
 				return resolve('server_error');
-			/*console.log(response.statusCode);*/
-			/*console.log(body);*/
         	resp = convert.xml2js(body, { compact: true });
-			/*console.log(util.inspect(resp, {showHidden: false, depth: null})); */
 			if(response.statusCode != 200)
 				resolve('error');
 			else

@@ -11,7 +11,6 @@ function buildAnnulmentData(data){
 	annulmentdata = annulmentdata + '<annulmentReason>' + data.annulmentReason + '</annulmentReason>';
 	annulmentdata = annulmentdata + '</InvoiceAnnulment>';
 	
-	console.log(annulmentdata);/**/
 	return Base64.encode(annulmentdata);	
 }
 

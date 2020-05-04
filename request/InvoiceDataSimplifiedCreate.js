@@ -107,7 +107,6 @@ function buildInvoiceData(data){
 	invoicedata = invoicedata + '</invoiceMain>';
 	invoicedata = invoicedata + '</InvoiceData>';
 	
-	/*console.log(invoicedata);*/
 	return Base64.encode(invoicedata);
 }
 
